@@ -140,5 +140,3 @@ Le marché de l'emploi tech en France est en pleine mutation. Si les opportunit�
 Notre questionnaire le confirme : les étudiants cherchent sur plusieurs plateformes en même temps, ne trouvent pas facilement des offres adaptées à leur niveau, et manquent d'outils pour comparer et décider efficacement.
 
 Aucun acteur du marché actuel ne répond simultanément à ces trois besoins fondamentaux : centraliser les offres tech, les filtrer intelligemment, et aider à la décision. C'est exactement le vide que notre plateforme vient combler.
-
-Notre valeur ajoutée ne repose pas sur le volume d'offres, mais sur la qualité de l'expérience : trouver le bon stage, au bon moment, avec les bonnes informations, sans avoir à chercher partout.
