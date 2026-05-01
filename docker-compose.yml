@@ -1,0 +1,71 @@
+services:
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    # depends_on:
+    #   - backend
+    environment:
+      - .env
+    # networks:
+    #   - app-network
+
+#   backend:
+#     build: ./backend
+#     ports:
+#       - "4000:4000"
+#     depends_on:
+#       database:
+#         condition: service_healthy
+#     environment:
+#       - DATABASE_URL=postgresql://user:password@database:5432/jobdb
+#       - JWT_SECRET=${JWT_SECRET}
+#       - NODE_ENV=development
+#       - AI_SERVICE_URL=http://ai-service:8000
+#       - WELOVEDEVS_API_KEY=${WELOVEDEVS_API_KEY}
+#       - RATE_LIMIT_DELAY_MS=1000
+#     networks:
+#       - app-network
+
+#   ai-service:
+#     build: ./ai-service
+#     ports:
+#       - "8000:8000"
+#     environment:
+#       - AI_BACKEND=ollama
+#       - OLLAMA_URL=http://ollama:11434
+#       - OLLAMA_MODEL=mistral
+#     networks:
+#       - app-network
+#     healthcheck:
+#       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+
+#   database:
+#     image: postgres:15
+#     ports:
+#       - "5432:5432"
+#     environment:
+#       - POSTGRES_DB=jobdb
+#       - POSTGRES_USER=user
+#       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#     volumes:
+#       - pgdata:/var/lib/postgresql/data
+#       - ./database/init:/docker-entrypoint-initdb.d
+#     networks:
+#       - app-network
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -U user -d jobdb"]
+#       interval: 5s
+#       timeout: 3s
+#       retries: 5
+
+# networks:
+#   app-network:
+#     driver: bridge
+
+# volumes:
+#   pgdata:
