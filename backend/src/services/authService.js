@@ -1,0 +1,91 @@
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import pool from '../config/db.js';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'secret123';
+
+// 🔐 REGISTER
+export const registerUser = async ({ email, password, full_name }) => {
+  try {
+    // 1. Vérifier si user existe déjà
+    const existingUser = await pool.query(
+      'SELECT id FROM users WHERE email = $1',
+      [email]
+    );
+
+    if (existingUser.rows.length > 0) {
+      throw new Error('User already exists');
+    }
+
+    // 2. Hash du mot de passe
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 3. Récupérer le rôle "user"
+    const roleResult = await pool.query(
+      "SELECT id FROM roles WHERE name = 'user' LIMIT 1"
+    );
+
+    if (roleResult.rows.length === 0) {
+      throw new Error('Role "user" not found in database');
+    }
+
+    const roleId = roleResult.rows[0].id;
+
+    // 4. Insert user
+    const result = await pool.query(
+      `INSERT INTO users (email, password_hash, full_name, role_id)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, email, full_name`,
+      [
+        email,
+        hashedPassword,
+        full_name || 'User',
+        roleId
+      ]
+    );
+
+    return result.rows[0];
+
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// 🔐 LOGIN
+export const loginUser = async ({ email, password }) => {
+  try {
+    // 1. Récupérer user
+    const result = await pool.query(
+      `SELECT id, email, password_hash FROM users WHERE email = $1`,
+      [email]
+    );
+
+    const user = result.rows[0];
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // 2. Vérifier password
+    const valid = await bcrypt.compare(password, user.password_hash);
+
+    if (!valid) {
+      throw new Error('Invalid password');
+    }
+
+    // 3. Générer token
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: user.email
+      },
+      JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    return token;
+
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
