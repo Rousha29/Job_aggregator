@@ -1,11 +1,10 @@
-import { fetchJobs } from '../services/welovedevsService.js';
+import { ingestJobs } from '../services/ingestionService.js';
 
 export const importOffers = async (req, res) => {
   try {
-    const jobs = await fetchJobs();
-
-    res.json(jobs); // temporaire pour tester
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const result = await ingestJobs();
+    res.json({ success: true, ...result });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
