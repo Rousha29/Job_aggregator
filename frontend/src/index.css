@@ -50,6 +50,13 @@
   }
 }
 
+<<<<<<< HEAD
+=======
+body {
+  margin: 0;
+}
+
+>>>>>>> 632fc20711f66c4086161952579ef60c888dbaab
 #root {
   width: 1126px;
   max-width: 100%;
@@ -62,10 +69,13 @@
   box-sizing: border-box;
 }
 
+<<<<<<< HEAD
 body {
   margin: 0;
 }
 
+=======
+>>>>>>> 632fc20711f66c4086161952579ef60c888dbaab
 h1,
 h2 {
   font-family: var(--heading);
