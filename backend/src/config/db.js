@@ -2,11 +2,7 @@ import pkg from 'pg';
 const { Pool } = pkg;
 
 const pool = new Pool({
-  user: 'myuser',
-  host: 'localhost',
-  database: 'jobdb',
-  password: 'pass',
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
 });
 
 export default pool;
