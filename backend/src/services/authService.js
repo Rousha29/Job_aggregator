@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import pool from '../config/db.js';
 
-const JWT_SECRET = 'secret123'; // à mettre dans .env
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export const registerUser = async ({ email, password }) => {
   const hashedPassword = await bcrypt.hash(password, 10);
