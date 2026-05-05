@@ -47,7 +47,8 @@ export const registerUser = async ({ email, password, full_name }) => {
     return result.rows[0];
 
   } catch (error) {
-    throw new Error(error.message);
+    console.error('authService error:', error);
+    throw error; // ← throw directement sans re-wrapper
   }
 };
 
@@ -86,6 +87,7 @@ export const loginUser = async ({ email, password }) => {
     return token;
 
   } catch (error) {
-    throw new Error(error.message);
+    console.error('authService error:', error);
+    throw error; // ← throw directement sans re-wrapper
   }
 };

@@ -23,8 +23,8 @@ export default function Login() {
       const res = await login(form);
       const token = res.data.token;
       localStorage.setItem('token', token);
-      alert('Connecté !');
-      navigate('/');
+      // alert('Connecté !');
+      navigate('/home');
     } catch {
       alert('Identifiants invalides');
     }
