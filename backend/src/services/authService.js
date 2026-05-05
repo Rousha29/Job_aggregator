@@ -4,7 +4,7 @@ import pool from '../config/db.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret123';
 
-// 🔐 REGISTER
+//  REGISTER
 export const registerUser = async ({ email, password, full_name }) => {
   try {
     // 1. Vérifier si user existe déjà
@@ -51,7 +51,7 @@ export const registerUser = async ({ email, password, full_name }) => {
   }
 };
 
-// 🔐 LOGIN
+//  LOGIN
 export const loginUser = async ({ email, password }) => {
   try {
     // 1. Récupérer user

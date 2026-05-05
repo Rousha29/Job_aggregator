@@ -1,5 +1,5 @@
-import { fetchJobs } from '../API_welovedevs/welovedevService.js';
-import pool from '../config/db.js';
+import { fetchJobs } from './welovedevService.js';
+import pool from '../../config/db.js';
 
 const normalizeContractType = (contracts) => {
   if (!contracts) return 'other';
@@ -18,24 +18,32 @@ const normalizeLevel = (experience) => {
   return 'senior';
 };
 
-const normalizeOffer = (raw) => ({
-  external_id:    raw.id ?? raw.objectID,
-  title:          raw.title ?? 'Sans titre',
-  description:    raw.descriptionPreview ?? '',
-  company:        raw.smallCompany?.companyName ?? 'Inconnu',
-  location:       raw.formattedPlaces?.[0] ?? 'Non précisé',
-  contract_type:  normalizeContractType(raw.details?.contracts),
-  salary_min:     raw.details?.salary?.min ?? null,
-  salary_max:     raw.details?.salary?.max ?? null,
-  remote:         raw.details?.remotePolicy?.frequency === 'fullTime',
-  level:          normalizeLevel(raw.details?.requiredExperience),
-  source_url:     raw.seoAlias
-                    ? `https://welovedevs.com/app/jobs/${raw.seoAlias}`
-                    : null,
-  published_at:   raw.publishDate
-                    ? new Date(raw.publishDate / 1000)
-                    : new Date(),
-});
+const normalizeOffer = (raw) => {
+  // Rejeter les offres sans nom d'entreprise valide
+  const companyName = raw.smallCompany?.companyName?.trim();
+  if (!companyName) {
+    return null;
+  }
+
+  return {
+    external_id: raw.id ?? raw.objectID,
+    title: raw.title ?? 'Sans titre',
+    description: raw.descriptionPreview ?? '',
+    company: companyName,
+    location: raw.formattedPlaces?.[0] ?? 'Non précisé',
+    contract_type: normalizeContractType(raw.details?.contracts),
+    salary_min: raw.details?.salary?.min ?? null,
+    salary_max: raw.details?.salary?.max ?? null,
+    remote: raw.details?.remotePolicy?.frequency === 'fullTime',
+    level: normalizeLevel(raw.details?.requiredExperience),
+    source_url: raw.seoAlias
+      ? `https://welovedevs.com/app/jobs/${raw.seoAlias}`
+      : null,
+    published_at: raw.publishDate
+      ? new Date(raw.publishDate / 1000)
+      : new Date(),
+  };
+};
 
 export const ingestJobs = async () => {
   const data = await fetchJobs();
@@ -45,6 +53,11 @@ export const ingestJobs = async () => {
 
   for (const raw of offers) {
     const o = normalizeOffer(raw);
+
+    // Rejeter les offres sans nom d'entreprise valide
+    if (!o) {
+      continue;
+    }
 
     await pool.query(
       `INSERT INTO offers (

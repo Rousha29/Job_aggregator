@@ -6,7 +6,7 @@ import importRoutes from './routes/import.routes.js';
 import userRoutes from './routes/users.routes.js';
 import healthRoutes from './routes/health.routes.js';
 import { authMiddleware } from './middlewares/auth.middleware.js';
-import "./cron/jobs.cron.js";
+import "./services/cron/jobs.cron.js";
 
 const app = express();
 
