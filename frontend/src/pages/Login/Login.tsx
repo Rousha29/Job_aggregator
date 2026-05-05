@@ -25,8 +25,13 @@ export default function Login() {
       localStorage.setItem('token', token);
       alert('Connecté !');
       navigate('/');
-    } catch {
-      alert('Identifiants invalides');
+    } catch (err: unknown) {
+      const message =
+        typeof err === 'object' && err !== null && 'response' in err
+          ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
+          : undefined;
+
+      alert(message || 'Identifiants invalides');
     }
   };
 

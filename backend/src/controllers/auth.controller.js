@@ -27,7 +27,7 @@ export const register = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(400).json({ error: 'Registration failed' });
+    res.status(400).json({ error: err.message || 'Registration failed' });
   }
 };
 

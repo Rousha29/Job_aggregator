@@ -42,11 +42,12 @@ export default function Register() {
       alert('Compte créé !');
       navigate('/login');
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        alert(err.message);
-      } else {
-        alert("Erreur lors de l'inscription");
-      }
+      const responseError =
+        typeof err === 'object' && err !== null && 'response' in err
+          ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
+          : undefined;
+
+      alert(responseError || "Erreur lors de l'inscription");
     }
   };
 
