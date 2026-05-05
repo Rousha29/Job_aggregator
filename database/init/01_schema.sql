@@ -55,6 +55,3 @@ CREATE TABLE favorites (
   saved_at TIMESTAMP DEFAULT NOW(),
   PRIMARY KEY (user_id, offer_id)
 );
-
-INSERT INTO roles (name) VALUES ('user'), ('admin')
-ON CONFLICT (name) DO NOTHING;

@@ -1,4 +1,4 @@
-import { fetchJobs } from './welovedevService.js';
+import { fetchJobs } from '../API_welovedevs/welovedevService.js';
 import pool from '../config/db.js';
 
 const normalizeContractType = (contracts) => {
