@@ -1,5 +1,4 @@
 services:
-
   frontend:
     build: ./frontend
     ports:
@@ -15,6 +14,9 @@ services:
     build: ./backend
     ports:
       - "4000:4000"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     depends_on:
       database:
         condition: service_healthy

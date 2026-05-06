@@ -360,3 +360,18 @@
     grid-template-columns: 1fr;
   }
 }
+
+.profession {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #999;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.tagRemote {
+  background: #f0f0ff;
+  color: #4444aa;
+  border-color: #c8c8ee;
+}
+

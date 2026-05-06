@@ -10,7 +10,8 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/home" element={<Home />} />
-      <Route path="/" element={<Navigate to="/home" replace />} />
+      <Route path="/profile" element={<div>Profile page</div>} />
+      <Route path="/comparer" element={<div>Comparer page</div>} />
     </Routes>
   );
 }
