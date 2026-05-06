@@ -1,0 +1,267 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.topBar {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.iconButton {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+}
+
+.iconButton:hover {
+  background-color: var(--social-bg);
+  border-color: var(--accent);
+  color: var(--text-h);
+}
+
+.iconButton:hover .settingsIcon {
+  transform: rotate(30deg);
+}
+
+.settingsIcon {
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+.singleLayout {
+  max-width: 1000px;
+  margin: 6rem auto 2rem;
+  padding: 0 2rem;
+}
+
+.doubleLayout {
+  max-width: 1000px;
+  margin: 6rem auto 2rem;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.card {
+  background-color: var(--bg);
+  border-radius: 1.5rem;
+  padding: 3.5rem;
+  box-shadow: var(--shadow);
+  min-height: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.tabHeader {
+  display: flex;
+  justify-content: flex-start;
+  gap: 5rem;
+  align-items: center;
+  margin-bottom: 3.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabLink {
+  background: none;
+  border: none;
+  padding: 1.5rem 0;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  display: block;
+  margin-bottom: 2rem;
+  text-align: center;
+  width: 100%;
+}
+
+.tabLink:last-child {
+  margin-left: auto;
+}
+
+.tabLink:hover {
+  color: var(--text-h);
+}
+
+.activeTab {
+  color: var(--accent);
+  border-bottom: 2px solid black;
+}
+
+.activeTab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--accent);
+}
+
+.tabContent {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.cardContent {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 2rem 0;
+}
+
+.avatarPlaceholder {
+  width: 120px;
+  height: 120px;
+  background-color: var(--accent-bg);
+  color: var(--accent);
+  border: 2px solid var(--accent-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.profileForm {
+  max-width: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 0;
+  margin-left: 0;
+  text-align: left;
+}
+
+.profileForm input[readonly] {
+  background-color: transparent;
+  border: 1px solid transparent;
+  padding: 0.5rem 0;
+  font-weight: 500;
+  cursor: default;
+}
+
+.profileForm .formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.profileForm .formGroup:last-child {
+  margin-bottom: 0;
+}
+
+.editForm {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.editForm .formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.editForm .formGroup:last-child {
+  margin-bottom: 0;
+}
+
+.formGroup {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.formGroup label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.formGroup input {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background-color: var(--social-bg);
+  color: var(--text-h);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  border-color: black;
+  align-items: end;
+}
+
+.formGroup input:focus {
+  border-color: var(--accent);
+}
+
+.saveButton {
+  margin-top: 1.5rem;
+  padding: 1rem 3rem;
+  background-color: var(--text-h);
+  color: var(--bg);
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  align-self: flex-end;
+}
+
+.saveButton:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 1024px) {
+  .cardContent {
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+  }
+
+  .profileForm,
+  .editForm {
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .tabHeader {
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .cardContent {
+    justify-content: flex-start;
+  }
+}

@@ -24,7 +24,7 @@ export default function Login() {
       const token = res.data.token;
       localStorage.setItem('token', token);
       alert('Connecté !');
-      navigate('/');
+      navigate('/profile');
     } catch (err: unknown) {
       const message =
         typeof err === 'object' && err !== null && 'response' in err
@@ -69,6 +69,8 @@ export default function Login() {
         </form>
         <p className={styles.footer}>
           Pas encore de compte ? <Link to="/register">S'inscrire</Link>
+          <br />
+          <Link to="/profile">Accès direct Profil (test)</Link>
         </p>
       </div>
     </div>
