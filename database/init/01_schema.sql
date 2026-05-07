@@ -27,7 +27,7 @@ CREATE TABLE offers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   external_id VARCHAR(255) NOT NULL,
   source VARCHAR(50)
-    CHECK (source IN ('welovedevs', 'remotive')),
+    CHECK (source IN ('welovedevs', 'local')),
   title VARCHAR(255) NOT NULL,
   company VARCHAR(255),
   contract_type VARCHAR(50)
