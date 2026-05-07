@@ -27,6 +27,19 @@ jest.unstable_mockModule('jsonwebtoken', () => ({
   ...mockJwt
 }));
 
+// Mock axios
+jest.unstable_mockModule('axios', () => ({
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+  }
+}));
+
+// Mock import controller to avoid importing microservices
+jest.unstable_mockModule('../src/controllers/import.controller.js', () => ({
+  importOffers: jest.fn((req, res) => res.json({ success: true, inserted: 0, skipped: 0 }))
+}));
+
 // Import after mocking
 const { default: app } = await import('../src/app.js');
 const { default: pool } = await import('../src/config/db.js');
