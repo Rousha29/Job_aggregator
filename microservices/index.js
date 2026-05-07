@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import { ingestJobs } from './services/API_welovedevs/welovedev.ingest.js';
 
 dotenv.config();
 
@@ -12,6 +13,16 @@ app.use(express.json());
 // Health check endpoint
 app.get('/health', (req, res) => {
       res.json({ status: 'OK', message: 'Microservices is running' });
+});
+
+// Ingest endpoint
+app.post('/api/ingest', async (req, res) => {
+      try {
+            const result = await ingestJobs();
+            res.json({ success: true, ...result });
+      } catch (err) {
+            res.status(500).json({ error: err.message });
+      }
 });
 
 // Import et démarrer les cron jobs
