@@ -150,7 +150,7 @@ jobs:
         run: docker compose up -d --build
 
       - name: Wait for services
-        run: sleep 30
+        run: sleep 45
 
       - name: Health check backend
         run: curl -f http://localhost:4000/health || exit 1
