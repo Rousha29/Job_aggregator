@@ -4,7 +4,8 @@ import styles from './profile.module.css';
 
 export default function Profile() {
       const { theme, toggleTheme } = useTheme();
-      const [activeView, setActiveView] = useState<'view' | 'edit'>('view');
+      const [activeView, setActiveView] = useState<'view' | 'edit' | 'favorites'>('view');
+      const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
       return (
             <div className={styles.container}>
@@ -53,7 +54,11 @@ export default function Profile() {
                               )}
                         </button>
 
-                        <button className={styles.iconButton} aria-label="Paramètres">
+                        <button
+                              className={styles.iconButton}
+                              aria-label="Paramètres"
+                              onClick={() => setIsSettingsOpen(true)}
+                        >
                               <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="20"
@@ -72,9 +77,53 @@ export default function Profile() {
                         </button>
                   </div>
 
-                  <div className={styles.doubleLayout}>
+                  {isSettingsOpen && (
+                        <div className={styles.modalOverlay} onClick={() => setIsSettingsOpen(false)}>
+                              <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                                    <div className={styles.modalHeader}>
+                                          <h2>Paramètres</h2>
+                                          <button
+                                                className={styles.closeButton}
+                                                onClick={() => setIsSettingsOpen(false)}
+                                          >
+                                                &times;
+                                          </button>
+                                    </div>
+                                    <div className={styles.modalBody}>
+                                          <div className={styles.settingItem}>
+                                                <label>Notifications</label>
+                                                <input type="checkbox" defaultChecked />
+                                          </div>
+                                          <div className={styles.settingItem}>
+                                                <label>Accessibilité</label>
+                                                <button className={styles.actionButton}>Gérer</button>
+                                          </div>
+                                          <div className={styles.settingItem}>
+                                                <label>Confidentialité</label>
+                                                <button className={styles.actionButton}>Gérer</button>
+                                          </div>
+                                          <div className={styles.settingItem}>
+                                                <label>Mentions légales</label>
+                                                <button className={styles.actionButton}>Voir</button>
+                                          </div>
+                                    </div>
+                                    <div className={styles.modalFooter}>
+                                          <button className={styles.deleteButton}>
+                                                Supprimer le compte
+                                          </button>
+                                          <button className={styles.logoutButton}>
+                                                Déconnexion
+                                          </button>
+                                    </div>
+                              </div>
+                        </div>
+                  )}
+
+                  <h1 className={styles.pageTitle}>Mon profil</h1>
+
+                  <div className={styles.tripleLayout}>
                         {/* Bloc Profil */}
-                        <div className={styles.card}>
+                        <div className={`${styles.card} ${activeView === 'view' ? styles.activeCard : ''}`}>
                               <button
                                     className={`${styles.tabLink} ${activeView === 'view' ? styles.activeTab : ''}`}
                                     onClick={() => setActiveView('view')}
@@ -86,15 +135,15 @@ export default function Profile() {
                                           <form className={styles.profileForm}>
                                                 <div className={styles.formGroup}>
                                                       <label>Prénom</label>
-                                                      <input type="text" value="John" readOnly />
+                                                      <input type="text" value="test" readOnly />
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Nom</label>
-                                                      <input type="text" value="Doe" readOnly />
+                                                      <input type="text" value="test" readOnly />
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Email</label>
-                                                      <input type="email" value="john.doe@example.com" readOnly />
+                                                      <input type="email" value="test@test.test" readOnly />
                                                 </div>
                                           </form>
                                     </div>
@@ -102,7 +151,7 @@ export default function Profile() {
                         </div>
 
                         {/* Bloc Modifier le profil */}
-                        <div className={styles.card}>
+                        <div className={`${styles.card} ${activeView === 'edit' ? styles.activeCard : ''}`}>
                               <button
                                     className={`${styles.tabLink} ${activeView === 'edit' ? styles.activeTab : ''}`}
                                     onClick={() => setActiveView('edit')}
@@ -114,15 +163,23 @@ export default function Profile() {
                                           <form className={styles.editForm}>
                                                 <div className={styles.formGroup}>
                                                       <label>Prénom</label>
-                                                      <input type="text" placeholder="John" />
+                                                      <input type="text" placeholder="test" />
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Nom </label>
-                                                      <input type="text" placeholder="Doe" />
+                                                      <input type="text" placeholder="test" />
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Email</label>
-                                                      <input type="email" placeholder="john.doe@example.com" />
+                                                      <input type="email" placeholder="test@test.test" />
+                                                </div>
+                                                <div className={styles.formGroup}>
+                                                      <label>Nouveau mot de passe</label>
+                                                      <input type="password" placeholder="Entrez un nouveau mot de passe" />
+                                                </div>
+                                                <div className={styles.formGroup}>
+                                                      <label>Confirmer le mot de passe</label>
+                                                      <input type="password" placeholder="Confirmez le mot de passe" />
                                                 </div>
                                                 <button
                                                       type="submit"
@@ -135,6 +192,23 @@ export default function Profile() {
                                                       Enregistrer
                                                 </button>
                                           </form>
+                                    </div>
+                              )}
+                        </div>
+
+                        {/* Bloc Mes favoris */}
+                        <div className={`${styles.card} ${activeView === 'favorites' ? styles.activeCard : ''}`}>
+                              <button
+                                    className={`${styles.tabLink} ${activeView === 'favorites' ? styles.activeTab : ''}`}
+                                    onClick={() => setActiveView('favorites')}
+                              >
+                                    Mes favoris
+                              </button>
+                              {activeView === 'favorites' && (
+                                    <div className={styles.cardContent}>
+                                          <div className={styles.favoritesList}>
+                                                <p className={styles.emptyMessage}>Vous n'avez pas encore de favoris.</p>
+                                          </div>
                                     </div>
                               )}
                         </div>
