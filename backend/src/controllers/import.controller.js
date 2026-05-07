@@ -1,4 +1,4 @@
-import { ingestJobs } from '../services/API_welovedevs/welovedev.ingest.js';
+import { ingestJobs } from '../../../microservices/services/API_welovedevs/welovedev.ingest.js';
 
 export const importOffers = async (req, res) => {
   try {

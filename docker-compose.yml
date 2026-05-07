@@ -31,6 +31,25 @@ services:
       timeout: 5s
       retries: 5
 
+  microservices:
+    build: ./microservices
+    ports:
+      - "5001:5000"
+    depends_on:
+      database:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   ai-service:
     build: ./ai-service
     ports:
@@ -48,7 +67,9 @@ services:
   database:
     image: postgres:15
     ports:
-      - "5433:5432"
+      - "5432:5432"
+    # env_file:
+    #   - .env
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}

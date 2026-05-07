@@ -26,7 +26,7 @@ export const register = async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
+    // console.error(err);
     res.status(400).json({ error: err.message || 'Registration failed' });
   }
 };
@@ -38,7 +38,7 @@ export const login = async (req, res) => {
     res.status(200).json({ token });
 
   } catch (err) {
-    console.error(err);
+    // console.error(err);
     res.status(401).json({ error: 'Invalid credentials' });
   }
 };

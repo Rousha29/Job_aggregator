@@ -1,19 +1,19 @@
-import { fetchRemotiveJobs } from "./remotiveService.js";
-import { mapRemotiveJob } from "./remotive.mapper.js";
-import pool from "../../config/db.js";
+import { fetchJobs } from "./welovedevService.js";
+import { mapJob } from "./welovedev.mapper.js";
+import pool from "../../../backend/src/config/db.js";
 
-export async function syncRemotive() {
+export async function syncWeLoveDevs() {
       try {
-            const rawJobs = await fetchRemotiveJobs();
+            const data = await fetchJobs();
+            const rawJobs = data.values ?? [];
 
             let synced = 0;
             let skipped = 0;
-            let result_query = "";
 
             for (const rawJob of rawJobs) {
-                  const job = mapRemotiveJob(rawJob);
+                  const job = mapJob(rawJob);
 
-                  // Rejeter les offres sans nom d'entreprise valide
+                  // Rejeter les offres sans données valides (notamment sans entreprise)
                   if (!job) {
                         skipped++;
                         continue;
@@ -31,24 +31,24 @@ export async function syncRemotive() {
             contract_type=$7, salary_min=$8, salary_max=$9,
             remote=$10, level=$11, source_url=$12, fetched_at=NOW()`,
                               [
-                                    job.externalId, 'remotive', job.title, job.description, job.company,
+                                    job.externalId, 'welovedevs', job.title, job.description, job.company,
                                     job.location, job.contract_type, job.salary_min, job.salary_max,
                                     job.remote, job.level, job.source_url
                               ]
                         );
-                        result_query = await pool.query(`SELECT * FROM offers WHERE external_id = $1 AND source = 'remotive'`, [job.externalId]);
-                        console.log("Résultat de la requête d'insertion/mise à jour:", result_query.rows[0]);
-
                         synced++;
                   } catch (err) {
-                        console.error(`Erreur insertion Remotive ${job.externalId}:`, err.message);
+                        console.error(`Erreur insertion WeLoveDevs ${job.externalId}:`, err.message);
                   }
+
+                  // Rate limiting (1 req/s max selon la doc API)
+                  await new Promise(r => setTimeout(r, 1000));
             }
 
-            console.log(`Remotive sync: ${synced} inserted, ${skipped} skipped`);
+            console.log(`WeLoveDevs sync: ${synced} inserted, ${skipped} skipped`);
             return { synced, skipped };
       } catch (error) {
-            console.error("Remotive sync error:", error.message);
+            console.error("WeLoveDevs sync error:", error.message);
             throw error;
       }
 }

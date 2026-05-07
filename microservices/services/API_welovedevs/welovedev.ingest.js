@@ -1,5 +1,5 @@
 import { fetchJobs } from './welovedevService.js';
-import pool from '../../config/db.js';
+import pool from '../../../backend/src/config/db.js';
 
 const normalizeContractType = (contracts) => {
   if (!contracts) return 'other';

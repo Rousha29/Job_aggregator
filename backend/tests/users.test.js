@@ -1,0 +1,80 @@
+import { jest } from '@jest/globals';
+import request from 'supertest';
+
+// Mock node-cron to prevent cron jobs from running during tests
+jest.unstable_mockModule('node-cron', () => ({
+  default: {
+    schedule: jest.fn(() => ({
+      stop: jest.fn(),
+      start: jest.fn(),
+    })),
+  }
+}));
+
+// Mock modules
+jest.unstable_mockModule('../src/config/db.js', () => ({
+  default: {
+    query: jest.fn(),
+  },
+}));
+
+const mockJwt = {
+  sign: jest.fn(),
+  verify: jest.fn(),
+};
+jest.unstable_mockModule('jsonwebtoken', () => ({
+  default: mockJwt,
+  ...mockJwt
+}));
+
+// Import after mocking
+const { default: app } = await import('../src/app.js');
+const { default: pool } = await import('../src/config/db.js');
+const { default: jwt } = await import('jsonwebtoken');
+
+describe('Users API', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    process.env.JWT_SECRET = 'test_secret';
+  });
+
+  describe('GET /api/users/me', () => {
+    it('should return user info if authenticated', async () => {
+      jwt.verify.mockReturnValue({ id: 'user-uuid', email: 'test@example.com' });
+      pool.query.mockResolvedValueOnce({
+        rows: [{ id: 'user-uuid', email: 'test@example.com' }]
+      });
+
+      const res = await request(app)
+        .get('/api/users/me')
+        .set('Authorization', 'Bearer valid_token');
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.email).toBe('test@example.com');
+      expect(pool.query).toHaveBeenCalledWith(
+        expect.stringContaining('SELECT id, email FROM users'),
+        ['user-uuid']
+      );
+    });
+
+    it('should return 401 if no token provided', async () => {
+      const res = await request(app).get('/api/users/me');
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body.error).toBe('Unauthorized');
+    });
+
+    it('should return 401 if token is invalid', async () => {
+      jwt.verify.mockImplementation(() => {
+        throw new Error('Invalid token');
+      });
+
+      const res = await request(app)
+        .get('/api/users/me')
+        .set('Authorization', 'Bearer invalid_token');
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body.error).toBe('Invalid token');
+    });
+  });
+});
