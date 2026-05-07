@@ -82,10 +82,10 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Lint (flake8)
+      - name: Lint (ruff)
         run: |
-          pip install flake8
-          flake8 app/ --max-line-length=120 --exclude=__pycache__
+          pip install ruff
+          ruff check app/ --fix
 
       - name: Run tests
         run: |
@@ -125,7 +125,7 @@ jobs:
   docker:
     name: Docker Compose — Stack check
     runs-on: ubuntu-latest
-    needs: [backend, frontend, ai-service]
+    needs: [backend, frontend, ai-service, database, microservices]
 
     steps:
       - name: Checkout
@@ -145,6 +145,15 @@ jobs:
 
       - name: Health check AI service
         run: curl -f http://localhost:8000/health || exit 1
+
+      - name: Health check microservices
+        run: curl -f http://localhost:5001/health || exit 1
+
+      - name: Health check frontend
+        run: curl -f http://localhost:3000/ || exit 1
+
+      - name: Health check database
+        run: pg_isready -h localhost -p 5432 -U user || exit 1
 
       - name: Stop stack
         run: docker compose down
