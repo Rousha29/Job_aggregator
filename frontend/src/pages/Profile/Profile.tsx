@@ -117,7 +117,7 @@ export default function Profile() {
                                                       <input type="text" placeholder="John" />
                                                 </div>
                                                 <div className={styles.formGroup}>
-                                                      <label>Nom</label>
+                                                      <label>Nom </label>
                                                       <input type="text" placeholder="Doe" />
                                                 </div>
                                                 <div className={styles.formGroup}>
