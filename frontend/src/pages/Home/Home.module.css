@@ -107,12 +107,6 @@
   color: #555;
 }
 
-/* ── Search bar ── */
-.searchBar {
-  position: relative;
-  max-width: 580px;
-  margin: 0 auto;
-}
 
 .searchIcon {
   position: absolute;
@@ -375,3 +369,60 @@
   border-color: #c8c8ee;
 }
 
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+.searchBar {
+  position: relative;
+  flex: 1;
+}
+
+/* ── Pagination ── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 3rem;
+  padding-bottom: 2rem;
+}
+
+.pageBtn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.5rem;
+  background: #ffffff;
+  border: 1px solid #e0ddd6;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  border-color: #1a1a1a;
+  color: #1a1a1a;
+}
+
+.pageBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pageBtnActive {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.pageDots {
+  font-size: 0.85rem;
+  color: #aaa;
+  padding: 0 0.25rem;
+}

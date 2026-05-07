@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
 import BurgerMenu from '../../components/BurgerMenu/BurgerMenu';
+import FilterPanel, { type Filters } from '../../components/FilterPanel/FilterPanel';
 
 interface Offer {
   id: string;
@@ -21,14 +22,20 @@ interface Offer {
   };
 }
 
+const PAGE_SIZE = 20;
+
 export default function Home() {
   const navigate = useNavigate();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [filtered, setFiltered] = useState<Offer[]>([]);
   const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState<Filters>({ contractTypes: [], remote: [], salaryMin: null });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -37,7 +44,8 @@ export default function Home() {
       return;
     }
 
-    fetch(`http://localhost:4000/api/offers/jobs?page=0&size=20`, {
+    setLoading(true);
+    fetch(`http://localhost:4000/api/offers/jobs?page=${page}&size=${PAGE_SIZE}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -47,24 +55,39 @@ export default function Home() {
         setFiltered(list);
         setTotal(data.totalCount ?? 0);
         setLoading(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       })
       .catch(() => {
         setError('Impossible de charger les offres');
         setLoading(false);
       });
-  }, [navigate]);
+  }, [navigate, page]);
 
   useEffect(() => {
     const q = search.toLowerCase();
     setFiltered(
-      offers.filter(
-        (o) =>
+      offers.filter((o) => {
+        const matchSearch =
           o.title?.toLowerCase().includes(q) ||
           o.smallCompany?.companyName?.toLowerCase().includes(q) ||
-          o.formattedPlaces?.[0]?.toLowerCase().includes(q)
-      )
+          o.formattedPlaces?.[0]?.toLowerCase().includes(q);
+
+        const matchContract =
+          filters.contractTypes.length === 0 ||
+          o.contractTypes?.some((c) => filters.contractTypes.includes(c));
+
+        const matchRemote =
+          filters.remote.length === 0 ||
+          filters.remote.includes(o.details?.remotePolicy?.frequency ?? '');
+
+        const matchSalary =
+          !filters.salaryMin ||
+          (o.details?.salary?.min ?? 0) >= filters.salaryMin;
+
+        return matchSearch && matchContract && matchRemote && matchSalary;
+      })
     );
-  }, [search, offers]);
+  }, [search, filters, offers]);
 
   const formatSalary = (offer: Offer) => {
     const s = offer.details?.salary;
@@ -92,6 +115,23 @@ export default function Home() {
   const getContract = (offer: Offer) =>
     offer.contractTypes?.[0] ?? null;
 
+  // Génère les numéros de pages à afficher
+  const getPageNumbers = () => {
+    const pages: (number | '...')[] = [];
+    if (totalPages <= 7) {
+      for (let i = 0; i < totalPages; i++) pages.push(i);
+    } else {
+      pages.push(0);
+      if (page > 3) pages.push('...');
+      for (let i = Math.max(1, page - 2); i <= Math.min(totalPages - 2, page + 2); i++) {
+        pages.push(i);
+      }
+      if (page < totalPages - 4) pages.push('...');
+      pages.push(totalPages - 1);
+    }
+    return pages;
+  };
+
   return (
     <div className={styles.page}>
       <header className={styles.header}>
@@ -110,23 +150,26 @@ export default function Home() {
           <h1 className={styles.heroTitle}>
             Trouvez votre <em>prochaine</em> opportunité
           </h1>
-          <div className={styles.searchBar}>
-            <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
-            <input
-              className={styles.searchInput}
-              type="text"
-              placeholder="Titre, entreprise, ville..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            {search && (
-              <button className={styles.clearBtn} onClick={() => setSearch('')}>
-                ✕
-              </button>
-            )}
+          <div className={styles.searchRow}>
+            <div className={styles.searchBar}>
+              <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              <input
+                className={styles.searchInput}
+                type="text"
+                placeholder="Titre, entreprise, ville..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              {search && (
+                <button className={styles.clearBtn} onClick={() => setSearch('')}>
+                  ✕
+                </button>
+              )}
+            </div>
+            <FilterPanel onFiltersChange={setFilters} />
           </div>
           <p className={styles.resultCount}>
             {loading
@@ -144,70 +187,106 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <div className={styles.grid}>
-            {filtered.length === 0 ? (
-              <div className={styles.empty}>
-                <p>Aucune offre ne correspond à votre recherche.</p>
+          <>
+            <div className={styles.grid}>
+              {filtered.length === 0 ? (
+                <div className={styles.empty}>
+                  <p>Aucune offre ne correspond à votre recherche.</p>
+                </div>
+              ) : (
+                filtered.map((offer, index) => (
+                  <article key={offer.id ?? index} className={styles.card}>
+                    <div className={styles.cardTop}>
+                      <div className={styles.companyBadge}>
+                        {getCompany(offer).charAt(0).toUpperCase()}
+                      </div>
+                      <div className={styles.cardMeta}>
+                        <span className={styles.company}>{getCompany(offer)}</span>
+                        <span className={styles.date}>{formatDate(offer.publishDate)}</span>
+                      </div>
+                    </div>
+
+                    <h2 className={styles.title}>{offer.title}</h2>
+
+                    {offer.profession?.langContent?.fr?.displayName && (
+                      <span className={styles.profession}>
+                        {offer.profession.langContent.fr.displayName}
+                      </span>
+                    )}
+
+                    {offer.descriptionPreview && (
+                      <p className={styles.description}>
+                        {offer.descriptionPreview.slice(0, 120)}...
+                      </p>
+                    )}
+
+                    <div className={styles.tags}>
+                      {getLocation(offer) && (
+                        <span className={styles.tag}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                          </svg>
+                          {getLocation(offer)}
+                        </span>
+                      )}
+                      {getContract(offer) && (
+                        <span className={`${styles.tag} ${styles.tagContract}`}>
+                          {getContract(offer)}
+                        </span>
+                      )}
+                      {formatSalary(offer) && (
+                        <span className={`${styles.tag} ${styles.tagSalary}`}>
+                          {formatSalary(offer)}
+                        </span>
+                      )}
+                      {offer.details?.remotePolicy?.frequency && (
+                        <span className={`${styles.tag} ${styles.tagRemote}`}>
+                          {offer.details.remotePolicy.frequency}
+                        </span>
+                      )}
+                    </div>
+
+                    <button className={styles.cardBtn}>Voir l'offre →</button>
+                  </article>
+                ))
+              )}
+            </div>
+
+            {totalPages > 1 && (
+              <div className={styles.pagination}>
+                <button
+                  className={styles.pageBtn}
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  disabled={page === 0}
+                >
+                  ←
+                </button>
+
+                {getPageNumbers().map((p, i) =>
+                  p === '...' ? (
+                    <span key={`dots-${i}`} className={styles.pageDots}>…</span>
+                  ) : (
+                    <button
+                      key={p}
+                      className={`${styles.pageBtn} ${page === p ? styles.pageBtnActive : ''}`}
+                      onClick={() => setPage(p as number)}
+                    >
+                      {(p as number) + 1}
+                    </button>
+                  )
+                )}
+
+                <button
+                  className={styles.pageBtn}
+                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  disabled={page === totalPages - 1}
+                >
+                  →
+                </button>
               </div>
-            ) : (
-              filtered.map((offer) => (
-                <article key={offer.id} className={styles.card}>
-                  <div className={styles.cardTop}>
-                    <div className={styles.companyBadge}>
-                      {getCompany(offer).charAt(0).toUpperCase()}
-                    </div>
-                    <div className={styles.cardMeta}>
-                      <span className={styles.company}>{getCompany(offer)}</span>
-                      <span className={styles.date}>{formatDate(offer.publishDate)}</span>
-                    </div>
-                  </div>
-
-                  <h2 className={styles.title}>{offer.title}</h2>
-
-                  {offer.profession?.langContent?.fr?.displayName && (
-                    <span className={styles.profession}>
-                      {offer.profession.langContent.fr.displayName}
-                    </span>
-                  )}
-
-                  {offer.descriptionPreview && (
-                    <p className={styles.description}>
-                      {offer.descriptionPreview.slice(0, 120)}...
-                    </p>
-                  )}
-
-                  <div className={styles.tags}>
-                    {getLocation(offer) && (
-                      <span className={styles.tag}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12">
-                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                          <circle cx="12" cy="10" r="3" />
-                        </svg>
-                        {getLocation(offer)}
-                      </span>
-                    )}
-                    {getContract(offer) && (
-                      <span className={`${styles.tag} ${styles.tagContract}`}>
-                        {getContract(offer)}
-                      </span>
-                    )}
-                    {formatSalary(offer) && (
-                      <span className={`${styles.tag} ${styles.tagSalary}`}>
-                        {formatSalary(offer)}
-                      </span>
-                    )}
-                    {offer.details?.remotePolicy?.frequency && (
-                      <span className={`${styles.tag} ${styles.tagRemote}`}>
-                        {offer.details.remotePolicy.frequency}
-                      </span>
-                    )}
-                  </div>
-
-                  <button className={styles.cardBtn}>Voir l'offre →</button>
-                </article>
-              ))
             )}
-          </div>
+          </>
         )}
       </main>
     </div>
