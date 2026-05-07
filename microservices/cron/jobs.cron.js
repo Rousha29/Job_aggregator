@@ -1,16 +1,12 @@
 import cron from "node-cron";
-import { syncWeLoveDevs } from "../../../../microservices/services/API_welovedevs/welovedev.sync.js";
-import { syncRemotive } from "../API_remotive/remotive.sync.js";
+import { syncWeLoveDevs } from "../services/API_welovedevs/welovedev.sync.js";
 
 if (process.env.NODE_ENV !== "test") {
       cron.schedule("* * * * *", async () => {
             console.log("Sync global (toutes les 1 min pour test)...");
 
             try {
-                  await Promise.all([
-                        syncWeLoveDevs(),
-                        syncRemotive(),
-                  ]);
+                  await syncWeLoveDevs();
 
                   console.log("Tous les jobs sync");
             } catch (error) {

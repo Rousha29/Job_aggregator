@@ -1,6 +1,6 @@
 import { fetchJobs } from "./welovedevService.js";
 import { mapJob } from "./welovedev.mapper.js";
-import pool from "../../../backend/src/config/db.js";
+import pool from "../../config/db.js";
 
 export async function syncWeLoveDevs() {
       try {
