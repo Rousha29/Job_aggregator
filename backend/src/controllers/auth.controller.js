@@ -26,7 +26,6 @@ export const register = async (req, res) => {
     });
 
   } catch (err) {
-    // console.error(err);
     res.status(400).json({ error: err.message || 'Registration failed' });
   }
 };
@@ -37,8 +36,8 @@ export const login = async (req, res) => {
 
     res.status(200).json({ token });
 
+    // eslint-disable-next-line no-unused-vars
   } catch (err) {
-    // console.error(err);
     res.status(401).json({ error: 'Invalid credentials' });
   }
 };
