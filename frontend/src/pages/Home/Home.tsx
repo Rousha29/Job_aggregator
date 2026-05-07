@@ -3,26 +3,50 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
 import BurgerMenu from '../../components/BurgerMenu/BurgerMenu';
 import FilterPanel, { type Filters } from '../../components/FilterPanel/FilterPanel';
+import OfferModal from '../../components/Offermodal/OfferModal';
 
 interface Offer {
   id: string;
   title: string;
-  smallCompany?: { companyName: string };
+  smallCompany?: { companyName: string; seoAlias?: string };
   companyId?: string;
   formattedPlaces?: string[];
   contractTypes?: string[];
   details?: {
-    salary?: { min: number; max: number };
-    remotePolicy?: { frequency: string };
+    salary?: { min: number; max: number; recurrence?: string };
+    remotePolicy?: { frequency: string; daysPerWeek?: number };
+    requiredExperience?: number;
   };
   descriptionPreview?: string;
   publishDate?: number;
   profession?: {
     langContent?: { fr?: { displayName: string } };
   };
+  skillsList?: { name: string; value: number }[];
+  seoAlias?: string;
 }
 
 const PAGE_SIZE = 20;
+
+const formatContract = (contract: string) => {
+  const map: Record<string, string> = {
+    permanent: 'CDI',
+    internship: 'Stage',
+    alternance: 'Alternance',
+    freelance: 'Freelance',
+    contract: 'CDD',
+  };
+  return map[contract] ?? contract;
+};
+
+const formatRemote = (remote: string) => {
+  const map: Record<string, string> = {
+    hybrid: 'Hybride',
+    remote: 'Full remote',
+    onsite: 'Présentiel',
+  };
+  return map[remote] ?? remote;
+};
 
 export default function Home() {
   const navigate = useNavigate();
@@ -34,6 +58,7 @@ export default function Home() {
   const [error, setError] = useState('');
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
+  const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
@@ -45,7 +70,13 @@ export default function Home() {
     }
 
     setLoading(true);
-    fetch(`http://localhost:4000/api/offers/jobs?page=${page}&size=${PAGE_SIZE}`, {
+    const params = new URLSearchParams({
+      page: String(page),
+      size: String(PAGE_SIZE),
+    });
+    if (search) params.append('q', search);
+
+    fetch(`http://localhost:4000/api/offers/jobs?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -61,17 +92,11 @@ export default function Home() {
         setError('Impossible de charger les offres');
         setLoading(false);
       });
-  }, [navigate, page]);
+  }, [navigate, page, search]);
 
   useEffect(() => {
-    const q = search.toLowerCase();
     setFiltered(
       offers.filter((o) => {
-        const matchSearch =
-          o.title?.toLowerCase().includes(q) ||
-          o.smallCompany?.companyName?.toLowerCase().includes(q) ||
-          o.formattedPlaces?.[0]?.toLowerCase().includes(q);
-
         const matchContract =
           filters.contractTypes.length === 0 ||
           o.contractTypes?.some((c) => filters.contractTypes.includes(c));
@@ -84,10 +109,10 @@ export default function Home() {
           !filters.salaryMin ||
           (o.details?.salary?.min ?? 0) >= filters.salaryMin;
 
-        return matchSearch && matchContract && matchRemote && matchSalary;
+        return matchContract && matchRemote && matchSalary;
       })
     );
-  }, [search, filters, offers]);
+  }, [filters, offers]);
 
   const formatSalary = (offer: Offer) => {
     const s = offer.details?.salary;
@@ -115,7 +140,6 @@ export default function Home() {
   const getContract = (offer: Offer) =>
     offer.contractTypes?.[0] ?? null;
 
-  // Génère les numéros de pages à afficher
   const getPageNumbers = () => {
     const pages: (number | '...')[] = [];
     if (totalPages <= 7) {
@@ -161,10 +185,13 @@ export default function Home() {
                 type="text"
                 placeholder="Titre, entreprise, ville..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(0);
+                }}
               />
               {search && (
-                <button className={styles.clearBtn} onClick={() => setSearch('')}>
+                <button className={styles.clearBtn} onClick={() => { setSearch(''); setPage(0); }}>
                   ✕
                 </button>
               )}
@@ -195,7 +222,7 @@ export default function Home() {
                 </div>
               ) : (
                 filtered.map((offer, index) => (
-                  <article key={offer.id ?? index} className={styles.card}>
+                  <article key={`${offer.id}-${index}`} className={styles.card}>
                     <div className={styles.cardTop}>
                       <div className={styles.companyBadge}>
                         {getCompany(offer).charAt(0).toUpperCase()}
@@ -232,7 +259,7 @@ export default function Home() {
                       )}
                       {getContract(offer) && (
                         <span className={`${styles.tag} ${styles.tagContract}`}>
-                          {getContract(offer)}
+                          {formatContract(getContract(offer)!)}
                         </span>
                       )}
                       {formatSalary(offer) && (
@@ -242,12 +269,17 @@ export default function Home() {
                       )}
                       {offer.details?.remotePolicy?.frequency && (
                         <span className={`${styles.tag} ${styles.tagRemote}`}>
-                          {offer.details.remotePolicy.frequency}
+                          {formatRemote(offer.details.remotePolicy.frequency)}
                         </span>
                       )}
                     </div>
 
-                    <button className={styles.cardBtn}>Voir l'offre →</button>
+                    <button
+                      className={styles.cardBtn}
+                      onClick={() => setSelectedOffer(offer)}
+                    >
+                      Voir l'offre →
+                    </button>
                   </article>
                 ))
               )}
@@ -268,7 +300,7 @@ export default function Home() {
                     <span key={`dots-${i}`} className={styles.pageDots}>…</span>
                   ) : (
                     <button
-                      key={p}
+                      key={`page-${p}`}
                       className={`${styles.pageBtn} ${page === p ? styles.pageBtnActive : ''}`}
                       onClick={() => setPage(p as number)}
                     >
@@ -289,6 +321,10 @@ export default function Home() {
           </>
         )}
       </main>
+
+      {selectedOffer && (
+        <OfferModal offer={selectedOffer} onClose={() => setSelectedOffer(null)} />
+      )}
     </div>
   );
 }
