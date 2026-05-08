@@ -55,7 +55,12 @@ describe('Users API', () => {
     it('should return user info if authenticated', async () => {
       jwt.verify.mockReturnValue({ id: 'user-uuid', email: 'test@example.com' });
       pool.query.mockResolvedValueOnce({
-        rows: [{ id: 'user-uuid', email: 'test@example.com' }]
+        rows: [{ 
+          id: 'user-uuid', 
+          email: 'test@example.com',
+          full_name: 'Test User',
+          created_at: '2023-01-01T00:00:00.000Z'
+        }]
       });
 
       const res = await request(app)
@@ -64,8 +69,9 @@ describe('Users API', () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body.email).toBe('test@example.com');
+      expect(res.body.full_name).toBe('Test User');
       expect(pool.query).toHaveBeenCalledWith(
-        expect.stringContaining('SELECT id, email FROM users'),
+        expect.stringContaining('SELECT id, email, full_name, created_at FROM users'),
         ['user-uuid']
       );
     });
