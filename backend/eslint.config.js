@@ -8,11 +8,16 @@ export default [
       sourceType: "module",
       globals: {
         process: "readonly",
-        console: "readonly"
+        console: "readonly",
+        fetch: "readonly",
+        setTimeout: "readonly",
+        setInterval: "readonly",
+        clearTimeout: "readonly",
+        clearInterval: "readonly"
       }
     },
     rules: {
-      "no-unused-vars": "warn",
+      "no-unused-vars": ["warn", { varsIgnorePattern: "^_" }],
       "no-console": "off"
     }
   }

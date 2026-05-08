@@ -1,6 +1,13 @@
-import app from './app.js';
 import dotenv from 'dotenv';
 dotenv.config();
-app.listen(4000, () => {
+
+import app from './app.js';
+
+const server = app.listen(4000, () => {
   console.log('Server running on port 4000');
+});
+
+server.on('error', (err) => {
+  console.error('Server error:', err);
+  process.exit(1);
 });

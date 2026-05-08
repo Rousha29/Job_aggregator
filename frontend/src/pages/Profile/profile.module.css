@@ -1,0 +1,496 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.topBar {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.iconButton {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+}
+
+.iconButton:hover {
+  background-color: var(--social-bg);
+  border-color: var(--accent);
+  color: var(--text-h);
+}
+
+.iconButton:hover .settingsIcon {
+  transform: rotate(30deg);
+}
+
+.settingsIcon {
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+.pageTitle {
+  position: absolute;
+  top: 1.5rem;
+  left: 2rem;
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--text-h);
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.singleLayout {
+  max-width: 1000px;
+  margin: 3rem auto 2rem;
+  padding: 0 2rem;
+}
+
+.doubleLayout {
+  max-width: 1000px;
+  margin: 0.5rem auto 4rem;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: stretch;
+}
+
+.card {
+  background-color: var(--bg);
+  border-radius: 1.5rem;
+  padding: 3.5rem;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.activeCard {
+  background-color: var(--accent-bg);
+}
+
+.tabHeader {
+  display: flex;
+  justify-content: flex-start;
+  gap: 5rem;
+  align-items: center;
+  margin-bottom: 3.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabLink {
+  background: none;
+  border: none;
+  padding: 1.5rem 0;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  display: block;
+  margin-bottom: 2rem;
+  text-align: center;
+  width: 100%;
+}
+
+.tabLink:last-child {
+  margin-left: auto;
+}
+
+.tabLink:hover {
+  color: var(--text-h);
+}
+
+.activeTab {
+  color: var(--accent);
+  border-bottom: 2px solid black;
+}
+
+.activeTab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--accent);
+}
+
+.tabContent {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.cardContent {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 2rem 0;
+}
+
+.avatarPlaceholder {
+  width: 120px;
+  height: 120px;
+  background-color: var(--accent-bg);
+  color: var(--accent);
+  border: 2px solid var(--accent-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.profileForm {
+  max-width: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 0;
+  margin-left: 0;
+  text-align: left;
+}
+
+.profileForm input[readonly] {
+  background-color: transparent;
+  border: 1px solid transparent;
+  padding: 0.5rem 0;
+  font-weight: 500;
+  cursor: default;
+}
+
+.profileForm .formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.profileForm .formGroup:last-child {
+  margin-bottom: 0;
+}
+
+.editForm {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.editForm .formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.editForm .formGroup:last-child {
+  margin-bottom: 0;
+}
+
+.formGroup {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.formGroup label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.formGroup input {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background-color: var(--social-bg);
+  color: var(--text-h);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  border-color: black;
+  align-items: end;
+}
+
+.formGroup input:focus {
+  border-color: var(--accent);
+}
+
+.saveButton {
+  margin-top: 0.05rem;
+  padding: 1rem 3rem;
+  background-color: var(--text-h);
+  color: var(--bg);
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  align-self: flex-end;
+}
+
+.saveButton:hover {
+  opacity: 0.9;
+}
+
+.tripleLayout {
+  max-width: 1400px;
+  margin: 0.5rem auto 4rem;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  align-items: stretch;
+}
+
+.favoritesList {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.emptyMessage {
+  color: var(--text);
+  font-style: italic;
+  text-align: center;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.message {
+  margin: 2rem auto;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  text-align: center;
+  font-weight: 500;
+  display: block;
+  max-width: 250px;
+  box-sizing: border-box;
+}
+
+.success {
+  background-color: #e6f4ea;
+  color: #1e7e34;
+  border: 1px solid #c3e6cb;
+}
+
+.error {
+  background-color: #fce8e6;
+  color: #d93025;
+  border: 1px solid #f5c6cb;
+}
+
+@media (max-width: 1200px) {
+  .tripleLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
+  .cardContent {
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+  }
+
+  .profileForm,
+  .editForm {
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .tabHeader {
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .cardContent {
+    justify-content: flex-start;
+  }
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: #ffffff;
+  color: #1a1a1a;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border: 1px solid #e0e0e0;
+  animation: modalAppear 0.3s ease-out;
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #1a1a1a;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #666666;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.settingItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settingItem label {
+  font-weight: 500;
+  color: #333333;
+}
+
+.settingItem input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+
+.actionButton {
+  background: none;
+  border: 1px solid #e0e0e0;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  color: #333333;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.actionButton:hover {
+  background-color: #f5f5f5;
+  border-color: #999999;
+  color: #000000;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.logoutButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #f5f5f5;
+  color: #1a1a1a;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logoutButton:hover {
+  background-color: #eeeeee;
+}
+
+.deleteButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #fff1f1;
+  color: #d32f2f;
+  border: 1px solid #ffcdd2;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.deleteButton:hover {
+  background-color: #ffe5e5;
+  border-color: #d32f2f;
+}
+
+@media (max-width: 480px) {
+  .modalFooter {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .deleteButton,
+  .logoutButton,
+  .saveButton {
+    width: 100%;
+    margin: 0;
+  }
+}
