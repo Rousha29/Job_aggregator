@@ -30,6 +30,7 @@ export const login = async (req, res) => {
     res.status(200).json({ token });
   } catch (err) {
     console.error('Login error:', err.message);
-    res.status(401).json({ error: err.message || 'Invalid credentials' });
+    // Don't leak internal error messages to clients — return a generic message for invalid auth
+    res.status(401).json({ error: 'Invalid credentials' });
   }
 };
