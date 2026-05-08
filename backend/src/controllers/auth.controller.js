@@ -18,35 +18,18 @@ export const register = async (req, res) => {
     });
 
     res.status(201).json({ message: 'User created', user });
-
-<<<<<<< HEAD
   } catch (err) {
-    res.status(400).json({ error: err.message || 'Registration failed' });
+    console.error('Registration error:', err);
+    res.status(400).json({ error: err?.message || 'Registration failed' });
   }
-=======
-} catch (err) {
-  console.error('Registration error:', err);
-  console.error('Type:', typeof err);
-  console.error('Message:', err?.message);
-  console.error('Stack:', err?.stack);
-  res.status(400).json({ error: err?.message || JSON.stringify(err) });
-}
->>>>>>> feature/home
 };
 
 export const login = async (req, res) => {
   try {
     const token = await loginUser(req.body);
     res.status(200).json({ token });
-<<<<<<< HEAD
-
-    // eslint-disable-next-line no-unused-vars
-  } catch (err) {
-    res.status(401).json({ error: 'Invalid credentials' });
-=======
   } catch (err) {
     console.error('Login error:', err.message);
-    res.status(401).json({ error: err.message });
->>>>>>> feature/home
+    res.status(401).json({ error: err.message || 'Invalid credentials' });
   }
 };

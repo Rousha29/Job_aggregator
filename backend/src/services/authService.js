@@ -85,16 +85,15 @@ export const loginUser = async ({ email, password }) => {
     );
 
     return token;
+  } catch (error) {
+    console.error('authService error:', error);
+    throw error;
+  }
+};
 
-<<<<<<< HEAD
-    } catch (error) {
-    throw new Error(error.message);
-    }
-    };
-
-    // UPDATE
-    export const updateUser = async (userId, { email, password, full_name }) => {
-    try {
+// UPDATE
+export const updateUser = async (userId, { email, password, full_name }) => {
+  try {
     const updates = [];
     const values = [];
     let counter = 1;
@@ -137,14 +136,8 @@ export const loginUser = async ({ email, password }) => {
 
     const result = await pool.query(query, values);
     return result.rows[0];
-    } catch (error) {
-    throw new Error(error.message);
-    }
-    };
-=======
   } catch (error) {
     console.error('authService error:', error);
-    throw error; // ← throw directement sans re-wrapper
+    throw error;
   }
 };
->>>>>>> feature/home
