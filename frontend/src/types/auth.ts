@@ -14,3 +14,10 @@ export type LoginData = {
 export type AuthResponse = {
   token: string;
 };
+
+export type UpdateUserData = {
+  nom?: string;
+  prenom?: string;
+  email?: string;
+  password?: string;
+};

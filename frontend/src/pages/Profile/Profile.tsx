@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import styles from './profile.module.css';
-import API from '../../services/authService';
+import API, { updateProfile } from '../../services/authService';
 
 type User = {
   id: string;
@@ -15,14 +15,74 @@ export default function Profile() {
       const [isSettingsOpen, setIsSettingsOpen] = useState(false);
       const [user, setUser] = useState<User | null>(null);
 
+      // form modif profil
+      const [formData, setFormData] = useState({
+            prenom: '',
+            nom: '',
+            email: '',
+            password: '',
+            confirmPassword: ''
+      });
+      const [message, setMessage] = useState({ type: '', text: '' });
+
+      // message succés ou d'erreur effacer apres 3sec
+      useEffect(() => {
+            if (message.text) {
+                  const timer = setTimeout(() => {
+                        setMessage({ type: '', text: '' });
+                  }, 3000);
+                  return () => clearTimeout(timer);
+            }
+      }, [message.text]);
+
 useEffect(() => {
   API.get('/users/me')
-    .then(res => setUser(res.data))
+    .then(res => {
+          setUser(res.data);
+          const [prenom, ...nomParts] = (res.data.full_name || '').split(' ');
+          setFormData({
+                prenom: prenom || '',
+                nom: nomParts.join(' ') || '',
+                email: res.data.email || '',
+                password: '',
+                confirmPassword: ''
+          });
+    })
     .catch(() => {
       localStorage.removeItem('token');
       window.location.href = '/login';
     });
 }, []);
+
+const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setFormData(prev => ({ ...prev, [name]: value }));
+};
+
+const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setMessage({ type: '', text: '' });
+
+      if (formData.password && formData.password !== formData.confirmPassword) {
+            setMessage({ type: 'error', text: 'Les mots de passe ne correspondent pas' });
+            return;
+      }
+
+      try {
+            const res = await updateProfile({
+                  prenom: formData.prenom,
+                  nom: formData.nom,
+                  email: formData.email,
+                  password: formData.password || undefined
+            });
+            setUser(res.data);
+            setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
+            setMessage({ type: 'success', text: 'Profil mis à jour avec succès' });
+            setActiveView('view');
+      } catch (error: any) {
+            setMessage({ type: 'error', text: error.response?.data?.error || 'Erreur lors de la mise à jour' });
+      }
+};
 
       return (
             <div className={styles.container}>
@@ -138,6 +198,12 @@ useEffect(() => {
 
                   <h1 className={styles.pageTitle}>Mon profil</h1>
 
+                  {message.text && (
+                        <div className={`${styles.message} ${styles[message.type]}`}>
+                              {message.text}
+                        </div>
+                  )}
+
                   <div className={styles.tripleLayout}>
                         {/* Bloc Profil */}
                         <div className={`${styles.card} ${activeView === 'view' ? styles.activeCard : ''}`}>
@@ -156,7 +222,7 @@ useEffect(() => {
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Nom</label>
-                                                      <input type="text" value={user?.full_name?.split(' ')[1] || ''} readOnly />
+                                                      <input type="text" value={user?.full_name?.split(' ').slice(1).join(' ') || ''} readOnly />
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Email</label>
@@ -177,34 +243,57 @@ useEffect(() => {
                               </button>
                               {activeView === 'edit' && (
                                     <div className={styles.cardContent}>
-                                          <form className={styles.editForm}>
+                                          <form className={styles.editForm} onSubmit={handleSubmit}>
                                                 <div className={styles.formGroup}>
                                                       <label>Prénom</label>
-                                                      <input type="text" placeholder="test" value={user?.full_name?.split(' ')[0] || ''} />
+                                                      <input
+                                                            type="text"
+                                                            name="prenom"
+                                                            value={formData.prenom}
+                                                            onChange={handleInputChange}
+                                                      />
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Nom </label>
-                                                      <input type="text" placeholder="test" value={user?.full_name?.split(' ')[1] || ''} />
+                                                      <input
+                                                            type="text"
+                                                            name="nom"
+                                                            value={formData.nom}
+                                                            onChange={handleInputChange}
+                                                      />
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Email</label>
-                                                      <input type="email" placeholder="test@test.test" value={user?.email || ''} />
+                                                      <input
+                                                            type="email"
+                                                            name="email"
+                                                            value={formData.email}
+                                                            onChange={handleInputChange}
+                                                      />
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Nouveau mot de passe</label>
-                                                      <input type="password" placeholder="Entrez un nouveau mot de passe" />
+                                                      <input
+                                                            type="password"
+                                                            name="password"
+                                                            placeholder="Entrez un nouveau mot de passe"
+                                                            value={formData.password}
+                                                            onChange={handleInputChange}
+                                                      />
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Confirmer le mot de passe</label>
-                                                      <input type="password" placeholder="Confirmez le mot de passe" />
+                                                      <input
+                                                            type="password"
+                                                            name="confirmPassword"
+                                                            placeholder="Confirmez le mot de passe"
+                                                            value={formData.confirmPassword}
+                                                            onChange={handleInputChange}
+                                                      />
                                                 </div>
                                                 <button
                                                       type="submit"
                                                       className={styles.saveButton}
-                                                      onClick={(e) => {
-                                                            e.preventDefault();
-                                                            setActiveView('view');
-                                                      }}
                                                 >
                                                       Enregistrer
                                                 </button>

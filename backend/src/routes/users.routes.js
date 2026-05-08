@@ -1,6 +1,7 @@
 import express from 'express';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import pool from '../config/db.js';
+import { updateUser } from '../services/authService.js';
 
 const router = express.Router();
 
@@ -17,6 +18,23 @@ router.get('/me', authMiddleware, async (req, res) => {
     res.json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+router.put('/me', authMiddleware, async (req, res) => {
+  try {
+    const { nom, prenom, email, password } = req.body;
+    const full_name = (nom || prenom) ? `${prenom || ''} ${nom || ''}`.trim() : undefined;
+
+    const user = await updateUser(req.user.id, {
+      email,
+      password,
+      full_name
+    });
+
+    res.json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 });
 
