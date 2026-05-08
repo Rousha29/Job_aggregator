@@ -1,11 +1,28 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import styles from './profile.module.css';
+import API from '../../services/authService';
+
+type User = {
+  id: string;
+  email: string;
+  full_name: string;
+};
 
 export default function Profile() {
       const { theme, toggleTheme } = useTheme();
       const [activeView, setActiveView] = useState<'view' | 'edit' | 'favorites'>('view');
       const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+      const [user, setUser] = useState<User | null>(null);
+
+useEffect(() => {
+  API.get('/users/me')
+    .then(res => setUser(res.data))
+    .catch(() => {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    });
+}, []);
 
       return (
             <div className={styles.container}>
@@ -135,15 +152,15 @@ export default function Profile() {
                                           <form className={styles.profileForm}>
                                                 <div className={styles.formGroup}>
                                                       <label>Prénom</label>
-                                                      <input type="text" value="test" readOnly />
+                                                      <input type="text" value={user?.full_name?.split(' ')[0] || ''} readOnly />
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Nom</label>
-                                                      <input type="text" value="test" readOnly />
+                                                      <input type="text" value={user?.full_name?.split(' ')[1] || ''} readOnly />
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Email</label>
-                                                      <input type="email" value="test@test.test" readOnly />
+                                                      <input type="email" value={user?.email || ''} readOnly />
                                                 </div>
                                           </form>
                                     </div>
@@ -163,15 +180,15 @@ export default function Profile() {
                                           <form className={styles.editForm}>
                                                 <div className={styles.formGroup}>
                                                       <label>Prénom</label>
-                                                      <input type="text" placeholder="test" />
+                                                      <input type="text" placeholder="test" value={user?.full_name?.split(' ')[0] || ''} />
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Nom </label>
-                                                      <input type="text" placeholder="test" />
+                                                      <input type="text" placeholder="test" value={user?.full_name?.split(' ')[1] || ''} />
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Email</label>
-                                                      <input type="email" placeholder="test@test.test" />
+                                                      <input type="email" placeholder="test@test.test" value={user?.email || ''} />
                                                 </div>
                                                 <div className={styles.formGroup}>
                                                       <label>Nouveau mot de passe</label>

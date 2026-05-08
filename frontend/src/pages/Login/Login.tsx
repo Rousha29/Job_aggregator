@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { login } from '../../services/authService';
+import { loginUser } from '../../services/authService';
 import { useNavigate, Link } from 'react-router-dom';
 import type { LoginData } from '../../types/auth';
 import styles from './Login.module.css';
@@ -20,7 +20,7 @@ export default function Login() {
       return;
     }
     try {
-      const res = await login(form);
+      const res = await loginUser(form);
       const token = res.data.token;
       localStorage.setItem('token', token);
       alert('Connecté !');

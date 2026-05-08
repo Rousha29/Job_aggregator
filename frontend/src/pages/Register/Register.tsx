@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { register } from '../../services/authService';
+import { registerUser } from '../../services/authService';
 import { useNavigate, Link } from 'react-router-dom';
 import type { RegisterData } from '../../types/auth';
 import styles from './Register.module.css';
@@ -38,7 +38,7 @@ export default function Register() {
       return;
     }
     try {
-      await register(form);
+      await registerUser(form);
       alert('Compte créé !');
       navigate('/login');
     } catch (err: unknown) {
