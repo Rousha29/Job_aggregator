@@ -14,7 +14,7 @@ jest.unstable_mockModule('node-cron', () => ({
 // Mock modules
 jest.unstable_mockModule('../src/config/db.js', () => ({
   default: {
-    query: jest.fn(),
+    query: jest.fn().mockResolvedValue({ rows: [] }),
   },
 }));
 
@@ -41,8 +41,8 @@ jest.unstable_mockModule('../src/controllers/import.controller.js', () => ({
 }));
 
 // Import after mocking
-const { default: app } = await import('../src/app.js');
 const { default: pool } = await import('../src/config/db.js');
+const { default: app } = await import('../src/app.js');
 const { default: jwt } = await import('jsonwebtoken');
 
 describe('Users API', () => {
@@ -54,9 +54,9 @@ describe('Users API', () => {
   describe('GET /api/users/me', () => {
     it('should return user info if authenticated', async () => {
       jwt.verify.mockReturnValue({ id: 'user-uuid', email: 'test@example.com' });
-      pool.query.mockResolvedValueOnce({
-        rows: [{ 
-          id: 'user-uuid', 
+      pool.query.mockResolvedValue({
+        rows: [{
+          id: 'user-uuid',
           email: 'test@example.com',
           full_name: 'Test User',
           created_at: '2023-01-01T00:00:00.000Z'
