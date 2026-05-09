@@ -13,27 +13,31 @@ export default function Login() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.email || !form.password) {
-      alert('Tous les champs sont requis');
-      return;
-    }
-    try {
-      const res = await loginUser(form);
-      const token = res.data.token;
-      localStorage.setItem('token', token);
-      alert('Connecté !');
-      navigate('/profile');
-    } catch (err: unknown) {
-      const message =
-        typeof err === 'object' && err !== null && 'response' in err
-          ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
-          : undefined;
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!form.email || !form.password) {
+    alert('Tous les champs sont requis');
+    return;
+  }
+  try {
+    const res = await loginUser(form);
+    const { token, role } = res.data;
+    localStorage.setItem('token', token);
+    localStorage.setItem('role', role);
 
-      alert(message || 'Identifiants invalides');
+    if (role === 'admin') {
+      navigate('/admin');
+    } else {
+      navigate('/home');
     }
-  };
+  } catch (err: unknown) {
+    const message =
+      typeof err === 'object' && err !== null && 'response' in err
+        ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
+        : undefined;
+    alert(message || 'Identifiants invalides');
+  }
+};
 
   return (
     <div className={styles.page}>

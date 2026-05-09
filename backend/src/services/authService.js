@@ -55,36 +55,27 @@ export const registerUser = async ({ email, password, full_name }) => {
 //  LOGIN
 export const loginUser = async ({ email, password }) => {
   try {
-    // 1. Récupérer user
     const result = await pool.query(
-      `SELECT id, email, password_hash FROM users WHERE email = $1`,
+      `SELECT u.id, u.email, u.password_hash, r.name as role
+       FROM users u
+       JOIN roles r ON u.role_id = r.id
+       WHERE u.email = $1`,
       [email]
     );
 
     const user = result.rows[0];
+    if (!user) throw new Error('User not found');
 
-    if (!user) {
-      throw new Error('User not found');
-    }
+    const valid = bcrypt.compareSync(password, user.password_hash);
+    if (!valid) throw new Error('Invalid password');
 
-    // 2. Vérifier password
-    const valid = await bcrypt.compare(password, user.password_hash);
-
-    if (!valid) {
-      throw new Error('Invalid password');
-    }
-
-    // 3. Générer token
     const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email
-      },
+      { id: user.id, email: user.email, role: user.role },
       JWT_SECRET,
       { expiresIn: '1d' }
     );
 
-    return token;
+    return { token, role: user.role };
   } catch (error) {
     console.error('authService error:', error);
     throw error;
