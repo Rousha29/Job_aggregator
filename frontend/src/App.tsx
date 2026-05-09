@@ -6,6 +6,7 @@ import Home from './pages/Home/Home';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminOffers from './pages/admin/AdminOffers';
 import AdminUsers from './pages/admin/AdminUsers';
+import Comparateur from './pages/Comparateur/Comparateur';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/admin/offers" element={<AdminOffers />} />
       <Route path="/admin/users" element={<AdminUsers />} />
+      <Route path="/comparateur" element={<Comparateur />} />
     </Routes>
   );
 }

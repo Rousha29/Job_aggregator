@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useTheme } from '../../hooks/useTheme';
 import styles from './profile.module.css';
 import API, { updateProfile } from '../../services/authService';
 import api from '../../services/api';
 import BurgerMenu from '../../components/BurgerMenu/BurgerMenu';
 import OfferModal from '../../components/Offermodal/OfferModal';
+import ThemeToggleButton from '../../components/ThemeToggleButton/ThemeToggleButton';
 
 type User = {
       id: string;
@@ -45,7 +45,6 @@ const formatContract = (contract: string) => {
 };
 
 export default function Profile() {
-      const { theme, toggleTheme } = useTheme();
       const [activeView, setActiveView] = useState<'view' | 'edit' | 'favorites'>('view');
       const [isSettingsOpen, setIsSettingsOpen] = useState(false);
       const [user, setUser] = useState<User | null>(null);
@@ -161,49 +160,7 @@ export default function Profile() {
       return (
             <div className={styles.container}>
                   <div className={styles.topBar}>
-                        <button
-                              className={styles.iconButton}
-                              onClick={toggleTheme}
-                              aria-label="Changer de thème"
-                        >
-                              {theme === 'light' ? (
-                                    <svg
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          width="20"
-                                          height="20"
-                                          viewBox="0 0 24 24"
-                                          fill="none"
-                                          stroke="currentColor"
-                                          strokeWidth="2"
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                    >
-                                          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-                                    </svg>
-                              ) : (
-                                    <svg
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          width="20"
-                                          height="20"
-                                          viewBox="0 0 24 24"
-                                          fill="none"
-                                          stroke="currentColor"
-                                          strokeWidth="2"
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                    >
-                                          <circle cx="12" cy="12" r="4" />
-                                          <path d="M12 2v2" />
-                                          <path d="M12 20v2" />
-                                          <path d="m4.93 4.93 1.41 1.41" />
-                                          <path d="m17.66 17.66 1.41 1.41" />
-                                          <path d="M2 12h2" />
-                                          <path d="M20 12h2" />
-                                          <path d="m6.34 17.66-1.41 1.41" />
-                                          <path d="m19.07 4.93-1.41 1.41" />
-                                    </svg>
-                              )}
-                        </button>
+                        <ThemeToggleButton className={styles.iconButton} />
 
                         <button
                               className={styles.iconButton}
@@ -280,19 +237,19 @@ export default function Profile() {
                   )}
 
                   <div className={styles.tabNavigation}>
-                        <button 
+                        <button
                               className={`${styles.navItem} ${activeView === 'view' ? styles.activeNav : ''}`}
                               onClick={() => setActiveView('view')}
                         >
                               Profil
                         </button>
-                        <button 
+                        <button
                               className={`${styles.navItem} ${activeView === 'edit' ? styles.activeNav : ''}`}
                               onClick={() => setActiveView('edit')}
                         >
                               Modifier le profil
                         </button>
-                        <button 
+                        <button
                               className={`${styles.navItem} ${activeView === 'favorites' ? styles.activeNav : ''}`}
                               onClick={() => setActiveView('favorites')}
                         >
@@ -440,9 +397,9 @@ export default function Profile() {
                   </div>
 
                   {selectedOffer && (
-                        <OfferModal 
-                              offer={selectedOffer} 
-                              onClose={() => setSelectedOffer(null)} 
+                        <OfferModal
+                              offer={selectedOffer}
+                              onClose={() => setSelectedOffer(null)}
                               onFavoriteToggle={(id, isFav) => {
                                     if (!isFav) {
                                           setFavorites(prev => prev.filter(f => String(f.id) !== String(id)));
