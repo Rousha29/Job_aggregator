@@ -73,8 +73,6 @@ const handleSubmit = async (e: React.FormEvent) => {
         </form>
         <p className={styles.footer}>
           Pas encore de compte ? <Link to="/register">S'inscrire</Link>
-          <br />
-          <Link to="/profile">Accès direct Profil (test)</Link>
         </p>
       </div>
     </div>

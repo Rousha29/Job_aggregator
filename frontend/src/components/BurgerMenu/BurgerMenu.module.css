@@ -29,10 +29,12 @@
 .burgerOpen .bar:nth-child(1) {
   transform: translateY(6.5px) rotate(45deg);
 }
+
 .burgerOpen .bar:nth-child(2) {
   opacity: 0;
   width: 0;
 }
+
 .burgerOpen .bar:nth-child(3) {
   transform: translateY(-6.5px) rotate(-45deg);
 }
@@ -83,12 +85,15 @@
   justify-content: space-between;
   padding: 1.5rem 1.75rem;
   border-bottom: 1px solid #f0ede8;
+  gap: 1rem;
 }
 
 .logo {
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  flex: 1;
+  min-width: 0;
 }
 
 .logoMark {
@@ -114,12 +119,13 @@
 .closeBtn {
   background: none;
   border: none;
-  font-size: 0.85rem;
+  font-size: 1.5rem;
   color: #aaa;
   cursor: pointer;
-  padding: 0.25rem;
+  padding: 0;
   transition: color 0.2s;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .closeBtn:hover {

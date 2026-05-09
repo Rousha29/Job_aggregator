@@ -83,11 +83,6 @@
   flex-direction: column;
   flex-grow: 1;
 }
-
-.activeCard {
-  background-color: var(--accent-bg);
-}
-
 .tabHeader {
   display: flex;
   justify-content: flex-start;
@@ -123,7 +118,7 @@
 
 .activeTab {
   color: var(--accent);
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid var(--accent);
 }
 
 .activeTab::after {
@@ -233,7 +228,7 @@
   font-size: 1rem;
   outline: none;
   transition: border-color 0.2s;
-  border-color: black;
+  border-color: var(--border);
   align-items: end;
 }
 
@@ -436,7 +431,7 @@
 .actionButton:hover {
   background-color: #f5f5f5;
   border-color: #999999;
-  color: #000000;
+  color: var(--text-h);
 }
 
 .modalFooter {

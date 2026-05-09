@@ -86,9 +86,7 @@ export default function BurgerMenu() {
             <span className={styles.logoMark}>JA</span>
             <span className={styles.logoText}>Job Aggregator</span>
           </div>
-          <button className={styles.closeBtn} onClick={() => setOpen(false)} aria-label="Fermer">
-            ✕
-          </button>
+          
         </div>
 
         <ul className={styles.navList}>

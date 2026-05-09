@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import styles from './profile.module.css';
 import API, { updateProfile } from '../../services/authService';
+import BurgerMenu from '../../components/BurgerMenu/BurgerMenu';
 
 type User = {
   id: string;
@@ -152,6 +153,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                                     <circle cx="12" cy="12" r="3" />
                               </svg>
                         </button>
+                        <BurgerMenu />
                   </div>
 
                   {isSettingsOpen && (
