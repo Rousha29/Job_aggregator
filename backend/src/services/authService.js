@@ -66,7 +66,14 @@ export const loginUser = async ({ email, password }) => {
     const user = result.rows[0];
     if (!user) throw new Error('User not found');
 
-    const valid = bcrypt.compareSync(password, user.password_hash);
+    let valid;
+    if (typeof bcrypt.compare === 'function') {
+      valid = await bcrypt.compare(password, user.password_hash);
+    } else if (typeof bcrypt.compareSync === 'function') {
+      valid = bcrypt.compareSync(password, user.password_hash);
+    } else {
+      throw new Error('bcrypt compare not available');
+    }
     if (!valid) throw new Error('Invalid password');
 
     const token = jwt.sign(
