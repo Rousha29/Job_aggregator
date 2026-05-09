@@ -256,6 +256,32 @@
   color: var(--text-h);
 }
 
+.favBtn {
+  padding: 0.85rem 1.25rem;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-h);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.favBtn:hover {
+  background: var(--social-bg);
+  border-color: var(--text-h);
+}
+
+.favBtnActive {
+  background: #fff5f5;
+  border-color: #ffcccc;
+  color: #e74c3c;
+}
+
 /* ── Responsive ── */
 @media (max-width: 640px) {
   .overlay {
@@ -270,6 +296,7 @@
     flex-direction: column;
   }
   .applyBtn,
+  .favBtn,
   .closeFooterBtn {
     width: 100%;
     justify-content: center;

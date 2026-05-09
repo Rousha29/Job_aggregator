@@ -31,7 +31,7 @@ CREATE TABLE offers (
   title VARCHAR(255) NOT NULL,
   company VARCHAR(255),
   contract_type VARCHAR(50)
-    CHECK (contract_type IN ('stage', 'alternance', 'CDI', 'CDD', 'other')),
+    CHECK (contract_type IN ('stage', 'alternance', 'CDI', 'CDD', 'Autres')),
   salary_min INTEGER CHECK (salary_min >= 0),
   salary_max INTEGER CHECK (salary_max >= salary_min),
   remote BOOLEAN DEFAULT false,
