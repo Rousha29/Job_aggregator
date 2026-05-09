@@ -2,6 +2,7 @@ import axios from "axios";
 
 const API_URL = process.env.WELOVEDEVS_API_URL ?? "https://epi-api.welovedevs.com";
 const API_KEY = process.env.WELOVEDEVS_API_KEY;
+const REQUEST_TIMEOUT_MS = Number.parseInt(process.env.WELOVEDEVS_TIMEOUT_MS ?? '15000', 10);
 
 const normalizedBaseUrl = API_URL.replace(/\/+$/, "");
 const apiBaseUrl = normalizedBaseUrl.endsWith("/v1")
@@ -14,13 +15,13 @@ const apiClient = axios.create({
   headers: {
     "X-API-Key": API_KEY,
   },
-  timeout: 5000, // évite les blocages
+  timeout: Number.isFinite(REQUEST_TIMEOUT_MS) && REQUEST_TIMEOUT_MS > 0 ? REQUEST_TIMEOUT_MS : 15000,
 });
 
 /**
  * Récupère les jobs depuis l'API
  */
-export const fetchJobs = async ({ page = 0, size = 10 } = {}) => {
+export const fetchJobs = async ({ page = 10, size = 50 } = {}) => {
   try {
     const response = await apiClient.get("", {
       params: { page, size },

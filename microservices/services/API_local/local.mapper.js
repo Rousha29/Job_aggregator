@@ -1,11 +1,11 @@
 const normalizeContractType = (type) => {
-      if (!type) return 'other';
-      const t = type.toLowerCase();
-      if (t.includes('stage')) return 'stage';
+      if (!type) return 'Autres';
+      const t = String(type).toLowerCase();
+      if (t.includes('stage') || t.includes('intern')) return 'stage';
       if (t.includes('alternance') || t.includes('apprentissage')) return 'alternance';
-      if (t === 'cdi') return 'CDI';
-      if (t === 'cdd') return 'CDD';
-      return 'other';
+      if (t === 'cdi' || t.includes('cdi')) return 'CDI';
+      if (t === 'cdd' || t.includes('cdd') || t.includes('contract')) return 'CDD';
+      return 'Autres';
 };
 
 const normalizeLevel = (experience) => {
@@ -28,8 +28,8 @@ export function mapLocalJob(offre) {
             salary_min: offre.salaire?.min || null,
             salary_max: offre.salaire?.max || null,
             contract_type: normalizeContractType(offre.type_contrat),
-            remote: offre.localisation?.teletravail?.toLowerCase().includes('hybride') ||
-                  offre.localisation?.teletravail?.toLowerCase().includes('remote') || false,
+            remote: (offre.localisation?.teletravail && String(offre.localisation.teletravail).toLowerCase().includes('hybride')) ||
+                  (offre.localisation?.teletravail && String(offre.localisation.teletravail).toLowerCase().includes('remote')) || false,
             level: normalizeLevel(offre.profil?.experience_annees),
             source_url: offre.entreprise?.site_web || null,
             source: 'local',
