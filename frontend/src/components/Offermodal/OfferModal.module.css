@@ -21,13 +21,13 @@
 
 /* ── Modal ── */
 .modal {
-  background: #ffffff;
+  background: var(--bg);
   width: 100%;
   max-width: 680px;
   max-height: 90vh;
   overflow-y: auto;
-  border: 1px solid #e0ddd6;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
   font-family: 'DM Sans', sans-serif;
   animation: slideUp 0.25s ease;
   display: flex;
@@ -56,14 +56,14 @@
 .companyBadge {
   width: 48px;
   height: 48px;
-  background: #f5f4f0;
-  border: 1px solid #e0ddd6;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.1rem;
   font-weight: 500;
-  color: #555;
+  color: var(--text);
   flex-shrink: 0;
 }
 
@@ -78,7 +78,7 @@
 .company {
   font-size: 0.95rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--text-h);
 }
 
 .profession {
@@ -86,14 +86,14 @@
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #aaa;
+  color: var(--text);
 }
 
 .closeBtn {
   background: none;
   border: none;
   font-size: 0.9rem;
-  color: #aaa;
+  color: var(--text);
   cursor: pointer;
   padding: 0.25rem;
   transition: color 0.2s;
@@ -102,7 +102,7 @@
 }
 
 .closeBtn:hover {
-  color: #1a1a1a;
+  color: var(--text-h);
 }
 
 /* ── Title ── */
@@ -114,14 +114,14 @@
   font-family: 'DM Serif Display', serif;
   font-size: 1.6rem;
   font-weight: 400;
-  color: #1a1a1a;
+  color: var(--text-h);
   margin: 0 0 0.4rem;
   line-height: 1.25;
 }
 
 .date {
   font-size: 0.78rem;
-  color: #bbb;
+  color: var(--text);
   margin: 0;
 }
 
@@ -131,7 +131,7 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 1.25rem 1.75rem;
-  border-bottom: 1px solid #f0ede8;
+  border-bottom: 1px solid var(--border);
 }
 
 .tag {
@@ -141,34 +141,34 @@
   font-size: 0.78rem;
   font-weight: 500;
   padding: 0.35rem 0.75rem;
-  background: #f5f4f0;
-  color: #555;
-  border: 1px solid #e0ddd6;
+  background: var(--code-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
   letter-spacing: 0.02em;
 }
 
 .tagContract {
-  background: #1a1a1a;
-  color: #fff;
-  border-color: #1a1a1a;
+  background: var(--text-h);
+  color: var(--bg);
+  border-color: var(--text-h);
 }
 
 .tagRemote {
-  background: #f0f0ff;
+  background: rgba(68, 68, 170, 0.1);
   color: #4444aa;
-  border-color: #c8c8ee;
+  border-color: rgba(68, 68, 170, 0.3);
 }
 
 .tagSalary {
-  background: #f0f5f0;
+  background: rgba(45, 106, 45, 0.1);
   color: #2d6a2d;
-  border-color: #c8e0c8;
+  border-color: rgba(45, 106, 45, 0.3);
 }
 
 /* ── Section ── */
 .section {
   padding: 1.25rem 1.75rem;
-  border-bottom: 1px solid #f0ede8;
+  border-bottom: 1px solid var(--border);
 }
 
 .sectionTitle {
@@ -176,7 +176,7 @@
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #aaa;
+  color: var(--text);
   margin: 0 0 0.85rem;
 }
 
@@ -191,15 +191,15 @@
   font-size: 0.8rem;
   font-weight: 500;
   padding: 0.3rem 0.75rem;
-  background: #f5f4f0;
-  border: 1px solid #e0ddd6;
-  color: #333;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  color: var(--text-h);
 }
 
 /* ── Description ── */
 .description {
   font-size: 0.88rem;
-  color: #555;
+  color: var(--text);
   line-height: 1.7;
 }
 
@@ -222,8 +222,8 @@
 
 .applyBtn {
   padding: 0.85rem 1.5rem;
-  background: #1a1a1a;
-  color: #ffffff;
+  background: var(--text-h);
+  color: var(--bg);
   border: none;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.88rem;
@@ -237,23 +237,23 @@
 }
 
 .applyBtn:hover {
-  background: #333;
+  opacity: 0.9;
 }
 
 .closeFooterBtn {
   padding: 0.85rem 1.25rem;
   background: none;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   font-family: 'DM Sans', sans-serif;
   font-size: 0.88rem;
-  color: #999;
+  color: var(--text);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .closeFooterBtn:hover {
-  border-color: #1a1a1a;
-  color: #1a1a1a;
+  border-color: var(--text-h);
+  color: var(--text-h);
 }
 
 /* ── Responsive ── */

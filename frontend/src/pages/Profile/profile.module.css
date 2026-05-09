@@ -83,6 +83,7 @@
   flex-direction: column;
   flex-grow: 1;
 }
+
 .tabHeader {
   display: flex;
   justify-content: flex-start;
@@ -346,14 +347,14 @@
 }
 
 .modalContent {
-  background-color: #ffffff;
-  color: #1a1a1a;
+  background-color: var(--bg);
+  color: var(--text-h);
   width: 90%;
   max-width: 500px;
   border-radius: 1.5rem;
   padding: 2rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  border: 1px solid #e0e0e0;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
   animation: modalAppear 0.3s ease-out;
 }
 
@@ -375,20 +376,20 @@
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border);
 }
 
 .modalHeader h2 {
   margin: 0;
   font-size: 1.5rem;
-  color: #1a1a1a;
+  color: var(--text-h);
 }
 
 .closeButton {
   background: none;
   border: none;
   font-size: 2rem;
-  color: #666666;
+  color: var(--text);
   cursor: pointer;
   line-height: 1;
 }
@@ -408,7 +409,7 @@
 
 .settingItem label {
   font-weight: 500;
-  color: #333333;
+  color: var(--text-h);
 }
 
 .settingItem input[type="checkbox"] {
@@ -419,18 +420,18 @@
 
 .actionButton {
   background: none;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border);
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  color: #333333;
+  color: var(--text);
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.2s;
 }
 
 .actionButton:hover {
-  background-color: #f5f5f5;
-  border-color: #999999;
+  background-color: var(--social-bg);
+  border-color: var(--text);
   color: var(--text-h);
 }
 
@@ -438,16 +439,16 @@
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border);
   padding-top: 1.5rem;
   flex-wrap: wrap;
 }
 
 .logoutButton {
   padding: 0.75rem 1.5rem;
-  background-color: #f5f5f5;
-  color: #1a1a1a;
-  border: 1px solid #e0e0e0;
+  background-color: var(--social-bg);
+  color: var(--text-h);
+  border: 1px solid var(--border);
   border-radius: 0.75rem;
   font-size: 0.9rem;
   font-weight: 500;
@@ -456,14 +457,14 @@
 }
 
 .logoutButton:hover {
-  background-color: #eeeeee;
+  background-color: var(--border);
 }
 
 .deleteButton {
   padding: 0.75rem 1.5rem;
-  background-color: #fff1f1;
+  background-color: rgba(211, 47, 47, 0.1);
   color: #d32f2f;
-  border: 1px solid #ffcdd2;
+  border: 1px solid rgba(211, 47, 47, 0.3);
   border-radius: 0.75rem;
   font-size: 0.9rem;
   font-weight: 500;
@@ -472,7 +473,7 @@
 }
 
 .deleteButton:hover {
-  background-color: #ffe5e5;
+  background-color: rgba(211, 47, 47, 0.2);
   border-color: #d32f2f;
 }
 
