@@ -1,40 +1,49 @@
-export const importOffers = async (req, res) => {
+export async function importOffers(req, res) {
   try {
-    const microservicesUrl = process.env.MICROSERVICES_URL || 'http://microservices:5000';
-    const response = await fetch(`${microservicesUrl}/api/ingest`, {
+    const response = await fetch('http://microservices:5000/api/ingest', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(req.body),
     });
 
     if (!response.ok) {
-      throw new Error(`Microservices API error: ${response.statusText}`);
+      return res.status(response.status).json({
+        error: 'Error in microservices ingestion',
+        details: await response.text(),
+      });
     }
 
-    const result = await response.json();
-    res.json({ success: true, ...result });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('Error importing offers:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
-};
+}
 
-export const importLocalJSON = async (req, res) => {
+export async function importLocalJSON(req, res) {
   try {
-    const jsonData = req.body;
-
-    const microservicesUrl = process.env.MICROSERVICES_URL || 'http://microservices:5000';
-    const response = await fetch(`${microservicesUrl}/api/ingest/local`, {
+    const response = await fetch('http://microservices:5000/api/ingest/local', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(jsonData),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(req.body),
     });
 
     if (!response.ok) {
-      throw new Error(`Microservices API error: ${response.statusText}`);
+      return res.status(response.status).json({
+        error: 'Error in microservices ingestion',
+        details: await response.text(),
+      });
     }
 
-    const result = await response.json();
-    res.json({ success: true, ...result });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('Error importing local JSON:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
-};
+}
