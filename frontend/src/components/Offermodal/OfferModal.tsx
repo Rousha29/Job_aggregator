@@ -5,6 +5,7 @@ import api from '../../services/api';
 interface Offer {
   id: string;
   title: string;
+  source?: string;
   smallCompany?: { companyName: string; seoAlias?: string };
   companyId?: string;
   formattedPlaces?: string[];
@@ -98,6 +99,7 @@ export default function OfferModal({ offer, onClose, onFavoriteToggle }: OfferMo
   };
 
   const company = offer.smallCompany?.companyName ?? offer.companyId ?? 'Entreprise';
+  const isLocalOffer = offer.source === 'local';
   const location = offer.formattedPlaces?.[0] ?? 'Non précisé';
   const contract = offer.contractTypes?.[0];
   const salary = offer.details?.salary;
@@ -129,6 +131,7 @@ export default function OfferModal({ offer, onClose, onFavoriteToggle }: OfferMo
           </div>
           <div className={styles.headerInfo}>
             <span className={styles.company}>{company}</span>
+            {isLocalOffer && <span className={styles.sourceBadge}>API locale</span>}
             {profession && <span className={styles.profession}>{profession}</span>}
           </div>
           <button className={styles.closeBtn} onClick={onClose} aria-label="Fermer">
@@ -207,13 +210,13 @@ export default function OfferModal({ offer, onClose, onFavoriteToggle }: OfferMo
               rel="noopener noreferrer"
               className={styles.applyBtn}
             >
-              Voir l'offre sur WeLoveDevs →
+              {isLocalOffer ? "Offre issue de l'API locale" : "Voir l'offre sur WeLoveDevs →"}
             </a>
           ) : (
             <button className={styles.applyBtn}>Postuler</button>
           )}
 
-          <button 
+          <button
             className={`${styles.favBtn} ${isFavorite ? styles.favBtnActive : ''}`}
             onClick={toggleFavorite}
             disabled={loadingFav}

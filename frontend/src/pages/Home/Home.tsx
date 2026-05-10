@@ -10,6 +10,7 @@ import api from '../../services/api';
 interface Offer {
   id: string;
   title: string;
+  source?: string;
   smallCompany?: { companyName: string; seoAlias?: string };
   companyId?: string;
   formattedPlaces?: string[];
@@ -234,6 +235,9 @@ export default function Home() {
                       </div>
                       <div className={styles.cardMeta}>
                         <span className={styles.company}>{getCompany(offer)}</span>
+                        {offer.source === 'local' && (
+                          <span className={styles.sourceBadge}>Source de données locale</span>
+                        )}
                         <span className={styles.date}>{formatDate(offer.publishDate)}</span>
                       </div>
                     </div>

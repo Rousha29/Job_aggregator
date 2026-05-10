@@ -2,9 +2,9 @@ import pool from '../config/db.js';
 
 export const fetchJobs = async (page = 0, size = 20, q = '') => {
   const offset = page * size;
-  
-  let query = `SELECT * FROM offers WHERE source = 'welovedevs'`;
-  let countQuery = `SELECT COUNT(*) FROM offers WHERE source = 'welovedevs'`;
+
+  let query = `SELECT * FROM offers`;
+  let countQuery = `SELECT COUNT(*) FROM offers`;
   let params = [];
   let paramIndex = 1;
 
@@ -30,6 +30,7 @@ export const fetchJobs = async (page = 0, size = 20, q = '') => {
     const values = res.rows.map(row => ({
       id: row.id,
       title: row.title,
+      source: row.source,
       smallCompany: {
         companyName: row.company,
       },

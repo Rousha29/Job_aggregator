@@ -5,7 +5,7 @@ import pool from "../../config/db.js";
 export async function syncWeLoveDevs() {
       try {
             let page = 0;
-            const size = 50; // Max size usually supported
+            const size = 50; 
             let totalSynced = 0;
             let totalSkipped = 0;
             let hasMore = true;
@@ -63,7 +63,7 @@ export async function syncWeLoveDevs() {
                   totalSkipped += pageSkipped;
                   console.log(`Page ${page} finished: ${pageSynced} synced, ${pageSkipped} skipped`);
 
-                  // Check if we should continue
+      
                   if (rawJobs.length < size) {
                         hasMore = false;
                   } else {

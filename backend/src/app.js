@@ -18,7 +18,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '20mb' }));
 app.use('/', healthRoutes);
 app.use('/api/test', testRoutes);
 app.use('/api/auth', authRoutes);

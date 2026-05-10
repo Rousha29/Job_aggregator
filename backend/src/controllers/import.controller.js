@@ -16,3 +16,25 @@ export const importOffers = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const importLocalJSON = async (req, res) => {
+  try {
+    const jsonData = req.body;
+
+    const microservicesUrl = process.env.MICROSERVICES_URL || 'http://microservices:5000';
+    const response = await fetch(`${microservicesUrl}/api/ingest/local`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(jsonData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Microservices API error: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    res.json({ success: true, ...result });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

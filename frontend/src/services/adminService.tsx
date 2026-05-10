@@ -33,3 +33,6 @@ export const deleteUser = (id: string) =>
 
 export const triggerIngestion = () =>
   API.post('/offers/import');
+
+export const importLocalJSON = (jsonData: object) =>
+  API.post('/offers/import/local', jsonData);

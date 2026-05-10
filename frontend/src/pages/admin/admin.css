@@ -46,8 +46,21 @@
   padding: 32px;
   border: 1px solid #e0e0e0;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.ingestion-card h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.ingestion-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
 }
 
 .btn-ingest {
@@ -58,6 +71,7 @@
   font-size: 14px;
   letter-spacing: 1px;
   cursor: pointer;
+  align-self: flex-start;
 }
 
 .admin-table {
@@ -108,7 +122,8 @@
 
 .admin-table td:nth-child(1) .admin-input,
 .admin-table td:nth-child(2) .admin-input {
-  margin-left: -1px; /* Compense la bordure pour aligner le texte */
+  margin-left: -1px;
+  /* Compense la bordure pour aligner le texte */
 }
 
 
