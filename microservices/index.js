@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { ingestJobs } from './services/API_welovedevs/welovedev.ingest.js';
+import { syncWeLoveDevs } from './services/API_welovedevs/welovedev.sync.js';
 
 dotenv.config();
 
@@ -18,7 +18,7 @@ app.get('/health', (req, res) => {
 // Ingest endpoint
 app.post('/api/ingest', async (req, res) => {
       try {
-            const result = await ingestJobs();
+            const result = await syncWeLoveDevs();
             res.json({ success: true, ...result });
       } catch (err) {
             res.status(500).json({ error: err.message });

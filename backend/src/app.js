@@ -6,7 +6,9 @@ import importRoutes from './routes/import.routes.js';
 import userRoutes from './routes/users.routes.js';
 import healthRoutes from './routes/health.routes.js';
 import offersRoutes from './routes/offers.routes.js';
+import favoritesRoutes from './routes/favorites.routes.js';
 import { authMiddleware } from './middlewares/auth.middleware.js';
+import adminRoutes from './routes/admin.routes.js';
 
 const app = express();
 
@@ -22,6 +24,7 @@ app.use('/api/test', testRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/offers', offersRoutes);
+app.use('/api/favorites', favoritesRoutes);
 app.use('/api/offers/import', authMiddleware, importRoutes);
-
+app.use('/api/admin', adminRoutes);
 export default app;

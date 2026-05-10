@@ -3,15 +3,15 @@
 /* ── Page ── */
 .page {
   min-height: 100vh;
-  background-color: #f5f4f0;
+  background-color: var(--code-bg);
   font-family: 'DM Sans', sans-serif;
-  color: #1a1a1a;
+  color: var(--text);
 }
 
 /* ── Header ── */
 .header {
-  background: #ffffff;
-  border-bottom: 1px solid #e0ddd6;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -49,7 +49,37 @@
   font-size: 0.95rem;
   font-weight: 500;
   letter-spacing: 0.02em;
-  color: #1a1a1a;
+  color: var(--text-h);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.themeToggle {
+  position: fixed;
+  top: 16px;
+  right: 64px;
+  z-index: 2001;
+  width: 36px;
+  height: 36px;
+  color: var(--text-h);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transition: background-color 0.2s;
+}
+
+.themeToggle:hover {
+  background-color: var(--social-bg);
 }
 
 .logoutBtn {
@@ -97,14 +127,14 @@
   font-family: 'DM Serif Display', serif;
   font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 400;
-  color: #1a1a1a;
+  color: var(--text-h);
   margin: 0 0 2.5rem;
   line-height: 1.15;
 }
 
 .heroTitle em {
   font-style: italic;
-  color: #555;
+  color: var(--text);
 }
 
 
@@ -115,30 +145,30 @@
   transform: translateY(-50%);
   width: 18px;
   height: 18px;
-  color: #aaa;
+  color: var(--text);
   pointer-events: none;
 }
 
 .searchInput {
   width: 100%;
   padding: 1rem 3rem 1rem 3rem;
-  border: 1px solid #ddd;
-  background: #ffffff;
+  border: 1px solid var(--border);
+  background: var(--bg);
   font-family: 'DM Sans', sans-serif;
   font-size: 0.95rem;
-  color: #1a1a1a;
+  color: var(--text-h);
   outline: none;
   box-sizing: border-box;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .searchInput::placeholder {
-  color: #bbb;
+  color: var(--text);
 }
 
 .searchInput:focus {
-  border-color: #1a1a1a;
-  box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
 }
 
 .clearBtn {
@@ -148,7 +178,7 @@
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: #aaa;
+  color: var(--text);
   font-size: 0.8rem;
   cursor: pointer;
   padding: 0.25rem;
@@ -156,13 +186,13 @@
 }
 
 .clearBtn:hover {
-  color: #1a1a1a;
+  color: var(--text-h);
 }
 
 .resultCount {
   margin-top: 1.25rem;
   font-size: 0.82rem;
-  color: #aaa;
+  color: var(--text);
   letter-spacing: 0.03em;
 }
 
@@ -175,8 +205,8 @@
 
 /* ── Card ── */
 .card {
-  background: #ffffff;
-  border: 1px solid #e0ddd6;
+  background: var(--bg);
+  border: 1px solid var(--border);
   padding: 1.75rem;
   display: flex;
   flex-direction: column;
@@ -186,7 +216,7 @@
 }
 
 .card:hover {
-  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow);
   transform: translateY(-2px);
 }
 
@@ -199,14 +229,14 @@
 .companyBadge {
   width: 40px;
   height: 40px;
-  background: #f5f4f0;
-  border: 1px solid #e0ddd6;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #555;
+  color: var(--text);
   flex-shrink: 0;
 }
 
@@ -220,7 +250,7 @@
 .company {
   font-size: 0.85rem;
   font-weight: 500;
-  color: #333;
+  color: var(--text-h);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -228,23 +258,30 @@
 
 .date {
   font-size: 0.75rem;
-  color: #bbb;
+  color: var(--text);
 }
 
 .title {
   font-family: 'DM Serif Display', serif;
   font-size: 1.15rem;
   font-weight: 400;
-  color: #1a1a1a;
+  color: var(--text-h);
   margin: 0;
   line-height: 1.3;
 }
 
 .description {
   font-size: 0.85rem;
-  color: #777;
+  color: var(--text);
   line-height: 1.6;
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 4.8em;
+  /* 3 lines * 1.6 line-height */
 }
 
 /* ── Tags ── */
@@ -262,16 +299,16 @@
   font-size: 0.75rem;
   font-weight: 500;
   padding: 0.3rem 0.65rem;
-  background: #f5f4f0;
-  color: #555;
-  border: 1px solid #e0ddd6;
+  background: var(--code-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
   letter-spacing: 0.02em;
 }
 
 .tagContract {
-  background: #1a1a1a;
-  color: #fff;
-  border-color: #1a1a1a;
+  background: var(--text-h);
+  color: var(--bg);
+  border-color: var(--text-h);
 }
 
 .tagSalary {
@@ -285,11 +322,11 @@
   margin-top: 0.25rem;
   padding: 0.65rem 1rem;
   background: none;
-  border: 1px solid #1a1a1a;
+  border: 1px solid var(--text-h);
   font-family: 'DM Sans', sans-serif;
   font-size: 0.82rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--text-h);
   cursor: pointer;
   letter-spacing: 0.04em;
   transition: background 0.2s, color 0.2s;
@@ -297,14 +334,14 @@
 }
 
 .cardBtn:hover {
-  background: #1a1a1a;
-  color: #fff;
+  background: var(--text-h);
+  color: var(--bg);
 }
 
 /* ── Skeleton ── */
 .skeleton {
-  background: #fff;
-  border: 1px solid #e0ddd6;
+  background: var(--bg);
+  border: 1px solid var(--border);
   height: 260px;
   position: relative;
   overflow: hidden;
@@ -314,13 +351,18 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.04) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, var(--accent-bg) 50%, transparent 100%);
   animation: shimmer 1.5s infinite;
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 /* ── States ── */
@@ -344,12 +386,15 @@
   .headerInner {
     padding: 1rem;
   }
+
   .main {
     padding: 0 1rem 3rem;
   }
+
   .hero {
     padding: 2.5rem 0 2rem;
   }
+
   .grid {
     grid-template-columns: 1fr;
   }
@@ -425,4 +470,19 @@
   font-size: 0.85rem;
   color: #aaa;
   padding: 0 0.25rem;
+}
+
+.iconButton {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
 }

@@ -3,6 +3,11 @@ import Register from './pages/Register/Register';
 import Login from './pages/Login/Login';
 import Profile from './pages/Profile/Profile';
 import Home from './pages/Home/Home';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminOffers from './pages/admin/AdminOffers';
+import AdminUsers from './pages/admin/AdminUsers';
+import Comparateur from './pages/Comparateur/Comparateur';
+
 function App() {
   return (
     <Routes>
@@ -11,6 +16,10 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/home" element={<Home />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin/offers" element={<AdminOffers />} />
+      <Route path="/admin/users" element={<AdminUsers />} />
+      <Route path="/comparateur" element={<Comparateur />} />
     </Routes>
   );
 }

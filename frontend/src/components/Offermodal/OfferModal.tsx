@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './OfferModal.module.css';
+import api from '../../services/api';
 
 interface Offer {
   id: string;
@@ -27,6 +28,7 @@ interface Offer {
 interface OfferModalProps {
   offer: Offer;
   onClose: () => void;
+  onFavoriteToggle?: (id: string, isFav: boolean) => void;
 }
 
 const formatContract = (contract: string) => {
@@ -49,7 +51,10 @@ const formatRemote = (remote: string) => {
   return map[remote] ?? remote;
 };
 
-export default function OfferModal({ offer, onClose }: OfferModalProps) {
+export default function OfferModal({ offer, onClose, onFavoriteToggle }: OfferModalProps) {
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [loadingFav, setLoadingFav] = useState(false);
+
   // Ferme avec Escape
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -62,6 +67,35 @@ export default function OfferModal({ offer, onClose }: OfferModalProps) {
       document.body.style.overflow = '';
     };
   }, [onClose]);
+
+  // Vérifier si déjà en favoris
+  useEffect(() => {
+    api.get('/favorites')
+      .then(res => {
+        const favs = res.data;
+        setIsFavorite(favs.some((f: any) => f.id === offer.id));
+      })
+      .catch(err => console.error('Error checking favorites', err));
+  }, [offer.id]);
+
+  const toggleFavorite = async () => {
+    setLoadingFav(true);
+    try {
+      if (isFavorite) {
+        await api.delete(`/favorites/${offer.id}`);
+        setIsFavorite(false);
+        if (onFavoriteToggle) onFavoriteToggle(offer.id, false);
+      } else {
+        await api.post(`/favorites/${offer.id}`);
+        setIsFavorite(true);
+        if (onFavoriteToggle) onFavoriteToggle(offer.id, true);
+      }
+    } catch (err) {
+      console.error('Error toggling favorite', err);
+    } finally {
+      setLoadingFav(false);
+    }
+  };
 
   const company = offer.smallCompany?.companyName ?? offer.companyId ?? 'Entreprise';
   const location = offer.formattedPlaces?.[0] ?? 'Non précisé';
@@ -178,6 +212,18 @@ export default function OfferModal({ offer, onClose }: OfferModalProps) {
           ) : (
             <button className={styles.applyBtn}>Postuler</button>
           )}
+
+          <button 
+            className={`${styles.favBtn} ${isFavorite ? styles.favBtnActive : ''}`}
+            onClick={toggleFavorite}
+            disabled={loadingFav}
+          >
+            <svg viewBox="0 0 24 24" fill={isFavorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" width="18" height="18">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.88-8.88 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+            {isFavorite ? 'Retirer des favoris' : 'Ajouter en favoris'}
+          </button>
+
           <button className={styles.closeFooterBtn} onClick={onClose}>
             Fermer
           </button>
