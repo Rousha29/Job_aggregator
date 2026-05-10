@@ -160,10 +160,10 @@ export default function Profile() {
       return (
             <div className={styles.container}>
                   <div className={styles.topBar}>
-                        <ThemeToggleButton className={styles.iconButton} />
+                        <ThemeToggleButton className={`${styles.iconButton} ${styles.themeButton}`} />
 
                         <button
-                              className={styles.iconButton}
+                              className={`${styles.iconButton} ${styles.settingsButton}`}
                               aria-label="Paramètres"
                               onClick={() => setIsSettingsOpen(true)}
                         >

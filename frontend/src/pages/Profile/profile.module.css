@@ -9,9 +9,24 @@
 }
 
 .topBar {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
+  position: static;
+}
+
+.themeButton {
+  position: fixed;
+  top: 16px;
+  right: 112px;
+  z-index: 2001;
+}
+
+.settingsButton {
+  position: fixed;
+  top: 16px;
+  right: 64px;
+  z-index: 2001;
+}
+
+.topBar {
   display: flex;
   gap: 1rem;
 }
@@ -113,8 +128,15 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .card {
@@ -276,9 +298,11 @@
 .favoritesList::-webkit-scrollbar {
   width: 4px;
 }
+
 .favoritesList::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .favoritesList::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 4px;

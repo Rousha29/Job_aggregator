@@ -24,7 +24,7 @@ export default function Comparateur() {
                 {/* ── Hero ── */}
                 <section className={styles.hero}>
                     <h1 className={styles.heroTitle}>
-                        Notre IA compare <em>vos offres</em> favoris
+                        Notre IA compare <em>vos offres</em> favories
                     </h1>
                 </section>
 
