@@ -5,18 +5,24 @@ import authRoutes from './routes/auth.routes.js';
 import importRoutes from './routes/import.routes.js';
 import userRoutes from './routes/users.routes.js';
 import healthRoutes from './routes/health.routes.js';
+<<<<<<< HEAD
 import { errorMiddleware } from './middlewares/error.middleware.js';
+=======
+import offersRoutes from './routes/offers.routes.js';
+import favoritesRoutes from './routes/favorites.routes.js';
+import { authMiddleware } from './middlewares/auth.middleware.js';
+import adminRoutes from './routes/admin.routes.js';
+>>>>>>> dev
 
 const app = express();
 
-app.use('/', healthRoutes);
-app.use(cors());
-app.use(express.json());
-app.use('/api/users', userRoutes);
-app.use('/api/test', testRoutes);
-app.use('/api/auth', authRoutes); 
-app.use('/api/offers/import', importRoutes);
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
+<<<<<<< HEAD
 app.use((req, res, next) => {
   const error = new Error(`Route introuvable : ${req.method} ${req.url}`);
   error.status = 404;
@@ -26,3 +32,15 @@ app.use((req, res, next) => {
 app.use(errorMiddleware);
 
 export default app;
+=======
+app.use(express.json({ limit: '20mb' }));
+app.use('/', healthRoutes);
+app.use('/api/test', testRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/offers', offersRoutes);
+app.use('/api/favorites', favoritesRoutes);
+app.use('/api/offers/import', authMiddleware, importRoutes);
+app.use('/api/admin', adminRoutes);
+export default app;
+>>>>>>> dev

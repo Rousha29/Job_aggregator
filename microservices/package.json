@@ -1,0 +1,21 @@
+{
+      "name": "microservices",
+      "version": "1.0.0",
+      "type": "module",
+      "description": "Microservices for job aggregation",
+      "main": "index.js",
+      "scripts": {
+            "start": "node index.js",
+            "dev": "nodemon index.js"
+      },
+      "dependencies": {
+            "express": "^5.2.1",
+            "node-cron": "^4.2.1",
+            "pg": "^8.20.0",
+            "dotenv": "^17.4.2",
+            "axios": "^1.16.0"
+      },
+      "devDependencies": {
+            "nodemon": "^3.1.14"
+      }
+}

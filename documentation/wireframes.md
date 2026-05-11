@@ -37,7 +37,7 @@ Au clic sur une offre, une page fiche de poste s'affiche avec :
 - Langage : HTML, CSS, JS, C++, et autres
 - Type de contrat : stage / alternance / CDI / CDD
 - Localisation : autocomplétion
-
+x
 ---
 
 ![Texte descriptif](images/dashboard.jpg)

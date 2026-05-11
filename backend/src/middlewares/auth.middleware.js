@@ -1,27 +1,28 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = 'secret123'; // (plus tard → .env)
-
 export const authMiddleware = (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
+    const JWT_SECRET = process.env.JWT_SECRET;
 
-    // 1. Vérifier si le token existe
-    if (!authHeader) {
-      return res.status(401).json({ error: 'No token provided' });
+    if (!JWT_SECRET) {
+      return res.status(500).json({ error: 'Server config error' });
     }
 
-    // 2. Extraire le token
-    const token = authHeader.split(' ')[1]; // "Bearer TOKEN"
+    const authHeader = req.headers.authorization;
 
-    // 3. Vérifier le token
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const token = authHeader.split(' ')[1];
+
     const decoded = jwt.verify(token, JWT_SECRET);
 
-    // 4. Injecter user dans req
     req.user = decoded;
 
     next();
-  } catch (error) {
+    // eslint-disable-next-line no-unused-vars
+  } catch (err) {
     return res.status(401).json({ error: 'Invalid token' });
   }
 };

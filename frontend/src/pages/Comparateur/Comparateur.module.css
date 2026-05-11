@@ -1,0 +1,307 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
+/* ── Page ── */
+.page {
+    min-height: 100vh;
+    background-color: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+}
+
+/* ── Header (identique Home) ── */
+.header {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 100;
+}
+
+.headerInner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logoMark {
+    width: 36px;
+    height: 36px;
+    background: var(--text-h);
+    color: var(--bg);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logoText {
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--text-h);
+}
+
+/* ── Main ── */
+.main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+}
+
+/* ── Hero ── */
+.hero {
+    padding: 4rem 0 2.5rem;
+    text-align: center;
+}
+
+.heroLabel {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 1rem;
+}
+
+.heroTitle {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 400;
+    color: var(--text-h);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.heroTitle em {
+    font-style: italic;
+    color: var(--text);
+}
+
+/* Invert hero title colors when site is in dark mode */
+:global(:root.dark) .page .heroTitle {
+    color: var(--text);
+}
+
+:global(:root.dark) .page .heroTitle em {
+    color: var(--text-h);
+}
+
+/* ── Slots ── */
+.slots {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.slot {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    justify-content: center;
+    gap: 1rem;
+    position: relative;
+    min-height: 200px;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.slot:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+}
+
+.slotNumber {
+    position: absolute;
+    top: 1rem;
+    left: 1.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--border);
+    letter-spacing: 0.04em;
+}
+
+.slotBtn {
+    width: 60px;
+    height: 60px;
+    border: 1.5px solid var(--text-h);
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-h);
+    transition: background 0.2s, color 0.2s;
+}
+
+.slotBtn:hover {
+    background: var(--text-h);
+    color: var(--bg);
+}
+
+.slotHint {
+    font-size: 0.82rem;
+    color: var(--border);
+    margin: 0;
+    letter-spacing: 0.02em;
+}
+
+/* ── Bouton comparer ── */
+.compareRow {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 3rem;
+}
+
+.compareBtn {
+    padding: 0.85rem 3rem;
+    background: var(--text-h);
+    color: var(--bg);
+    border: 1px solid var(--text-h);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.compareBtn:hover {
+    background: var(--bg);
+    color: var(--text-h);
+}
+
+/* ── Tableau comparatif ── */
+.tableWrap {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg);
+    border: 1px solid var(--border);
+}
+
+.thCriteria,
+.thOffer {
+    padding: 1rem 1.5rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+}
+
+.thOffer {
+    text-align: center;
+    width: 160px;
+}
+
+.tr:last-child td {
+    border-bottom: none;
+}
+
+.tdLabel {
+    padding: 1rem 1.5rem;
+    font-size: 0.88rem;
+    color: var(--text-h);
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+}
+
+.tdValue {
+    padding: 1rem 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--accent-bg);
+    color: var(--accent);
+    border: 1px solid rgba(200, 200, 200, 0.2);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.cross {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 235, 235, 0.6);
+    color: #cc0000;
+    border: 1px solid rgba(240, 200, 200, 0.5);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.iconButton {
+    position: fixed;
+    top: 16px;
+    right: 64px;
+    z-index: 2001;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-h);
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+    .headerInner {
+        padding: 1rem;
+    }
+
+    .main {
+        padding: 0 1rem 3rem;
+    }
+
+    .hero {
+        padding: 2.5rem 0 2rem;
+    }
+
+    /* Slots en colonne sur mobile */
+    .slots {
+        grid-template-columns: 1fr;
+    }
+
+    .slot {
+        min-height: 150px;
+        padding: 2rem 1.5rem;
+    }
+}
