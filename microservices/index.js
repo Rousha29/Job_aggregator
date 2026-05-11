@@ -16,13 +16,18 @@ app.get('/health', (req, res) => {
       res.json({ status: 'OK', message: 'Microservices is running' });
 });
 
+const sendSyncError = (res, err) => {
+      const status = Number.isInteger(err?.status) ? err.status : 500;
+      res.status(status).json({ error: err.message });
+};
+
 // Ingest endpoint (WeLoveDevs)
 app.post('/api/ingest', async (req, res) => {
       try {
             const result = await syncWeLoveDevs();
             res.json({ success: true, ...result });
       } catch (err) {
-            res.status(500).json({ error: err.message });
+            sendSyncError(res, err);
       }
 });
 
@@ -32,7 +37,7 @@ app.post('/api/ingest/local', async (req, res) => {
             const result = await syncLocalJSON(req.body);
             res.json({ success: true, ...result });
       } catch (err) {
-            res.status(500).json({ error: err.message });
+            sendSyncError(res, err);
       }
 });
 

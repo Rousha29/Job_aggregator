@@ -3,15 +3,19 @@ import { syncWeLoveDevs } from "../services/API_welovedevs/welovedev.sync.js";
 
 let syncRunning = false;
 
-if (process.env.NODE_ENV !== "test") {
-      cron.schedule("* * * * *", async () => {
+const cronEnabled =
+      process.env.ENABLE_WELOVEDEVS_CRON === "true" || process.env.NODE_ENV === "production";
+const cronSchedule = process.env.WELOVEDEVS_CRON_SCHEDULE || "*/10 * * * *";
+
+if (process.env.NODE_ENV !== "test" && cronEnabled) {
+      cron.schedule(cronSchedule, async () => {
             if (syncRunning) {
                   console.log("Sync ignorée: une exécution est déjà en cours.");
                   return;
             }
 
             syncRunning = true;
-            console.log("Sync WeLoveDevs (toutes les 1 min pour test)...");
+            console.log(`Sync WeLoveDevs (schedule: ${cronSchedule})...`);
 
             try {
                   await syncWeLoveDevs();
@@ -24,4 +28,7 @@ if (process.env.NODE_ENV !== "test") {
       });
 
       console.log("Cron jobs démarrés (WeLoveDevs uniquement)");
+} else {
+      console.log("Cron jobs WeLoveDevs désactivés");
 }
+

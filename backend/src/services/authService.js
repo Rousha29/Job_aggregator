@@ -7,10 +7,12 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret123';
 //  REGISTER
 export const registerUser = async ({ email, password, full_name }) => {
   try {
+    const normalizedEmail = email?.trim().toLowerCase();
+
     // 1. Vérifier si user existe déjà
     const existingUser = await pool.query(
       'SELECT id FROM users WHERE email = $1',
-      [email]
+      [normalizedEmail]
     );
 
     if (existingUser.rows.length > 0) {
@@ -37,9 +39,9 @@ export const registerUser = async ({ email, password, full_name }) => {
        VALUES ($1, $2, $3, $4)
        RETURNING id, email, full_name`,
       [
-        email,
+        normalizedEmail,
         hashedPassword,
-        full_name || 'User',
+        full_name?.trim() || 'User',
         roleId
       ]
     );
@@ -55,12 +57,14 @@ export const registerUser = async ({ email, password, full_name }) => {
 //  LOGIN
 export const loginUser = async ({ email, password }) => {
   try {
+    const normalizedEmail = email?.trim().toLowerCase();
+
     const result = await pool.query(
       `SELECT u.id, u.email, u.password_hash, r.name as role
        FROM users u
        JOIN roles r ON u.role_id = r.id
        WHERE u.email = $1`,
-      [email]
+      [normalizedEmail]
     );
 
     const user = result.rows[0];

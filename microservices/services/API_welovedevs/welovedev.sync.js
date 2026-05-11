@@ -5,7 +5,7 @@ import pool from "../../config/db.js";
 export async function syncWeLoveDevs() {
       try {
             let page = 0;
-            const size = 50; 
+            const size = 50;
             let totalSynced = 0;
             let totalSkipped = 0;
             let hasMore = true;
@@ -16,7 +16,7 @@ export async function syncWeLoveDevs() {
                   console.log(`Fetching page ${page}...`);
                   const data = await fetchJobs({ page, size });
                   const rawJobs = data.values ?? [];
-                  
+
                   if (rawJobs.length === 0) {
                         hasMore = false;
                         break;
@@ -56,14 +56,14 @@ export async function syncWeLoveDevs() {
                         }
 
                         // Rate limiting (1 req/s max selon la doc API)
-                        await new Promise(r => setTimeout(r, 200));
+                        await new Promise(r => setTimeout(r, 1100));
                   }
 
                   totalSynced += pageSynced;
                   totalSkipped += pageSkipped;
                   console.log(`Page ${page} finished: ${pageSynced} synced, ${pageSkipped} skipped`);
 
-      
+
                   if (rawJobs.length < size) {
                         hasMore = false;
                   } else {
