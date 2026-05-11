@@ -21,7 +21,6 @@ export const authMiddleware = (req, res, next) => {
     req.user = decoded;
 
     next();
-    // eslint-disable-next-line no-unused-vars
   } catch (err) {
     return res.status(401).json({ error: 'Invalid token' });
   }
