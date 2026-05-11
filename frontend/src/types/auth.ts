@@ -13,6 +13,7 @@ export type LoginData = {
 
 export type AuthResponse = {
   token: string;
+  role: string;
 };
 
 export type UpdateUserData = {

@@ -26,11 +26,9 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const token = await loginUser(req.body);
-    res.status(200).json({ token });
+    const { token, role } = await loginUser(req.body);
+    res.status(200).json({ token, role });
   } catch (err) {
-    console.error('Login error:', err.message);
-    // Don't leak internal error messages to clients — return a generic message for invalid auth
     res.status(401).json({ error: 'Invalid credentials' });
   }
 };

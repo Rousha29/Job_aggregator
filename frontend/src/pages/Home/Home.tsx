@@ -4,10 +4,13 @@ import styles from './Home.module.css';
 import BurgerMenu from '../../components/BurgerMenu/BurgerMenu';
 import FilterPanel, { type Filters } from '../../components/FilterPanel/FilterPanel';
 import OfferModal from '../../components/Offermodal/OfferModal';
+import ThemeToggleButton from '../../components/ThemeToggleButton/ThemeToggleButton';
+import api from '../../services/api';
 
 interface Offer {
   id: string;
   title: string;
+  source?: string;
   smallCompany?: { companyName: string; seoAlias?: string };
   companyId?: string;
   formattedPlaces?: string[];
@@ -70,17 +73,16 @@ export default function Home() {
     }
 
     setLoading(true);
-    const params = new URLSearchParams({
-      page: String(page),
-      size: String(PAGE_SIZE),
-    });
-    if (search) params.append('q', search);
 
-    fetch(`http://localhost:4000/api/offers/jobs?${params}`, {
-      headers: { Authorization: `Bearer ${token}` },
+    api.get('/offers/jobs', {
+      params: {
+        page,
+        size: PAGE_SIZE,
+        q: search
+      }
     })
-      .then((res) => res.json())
-      .then((data) => {
+      .then((res) => {
+        const data = res.data;
         const list = data.values ?? [];
         setOffers(list);
         setFiltered(list);
@@ -88,7 +90,8 @@ export default function Home() {
         setLoading(false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('Error fetching jobs:', err);
         setError('Impossible de charger les offres');
         setLoading(false);
       });
@@ -164,7 +167,10 @@ export default function Home() {
             <span className={styles.logoMark}>JA</span>
             <span className={styles.logoText}>Job Aggregator</span>
           </div>
-          <BurgerMenu />
+          <div className={styles.headerActions}>
+            <ThemeToggleButton className={styles.themeToggle} />
+            <BurgerMenu />
+          </div>
         </div>
       </header>
 
@@ -229,6 +235,9 @@ export default function Home() {
                       </div>
                       <div className={styles.cardMeta}>
                         <span className={styles.company}>{getCompany(offer)}</span>
+                        {offer.source === 'local' && (
+                          <span className={styles.sourceBadge}>Source de données locale</span>
+                        )}
                         <span className={styles.date}>{formatDate(offer.publishDate)}</span>
                       </div>
                     </div>
@@ -243,7 +252,8 @@ export default function Home() {
 
                     {offer.descriptionPreview && (
                       <p className={styles.description}>
-                        {offer.descriptionPreview.slice(0, 120)}...
+                        {offer.descriptionPreview.slice(0, 500)}
+                        {offer.descriptionPreview.length > 500 ? '...' : ''}
                       </p>
                     )}
 

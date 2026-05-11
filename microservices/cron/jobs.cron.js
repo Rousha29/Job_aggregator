@@ -1,21 +1,34 @@
 import cron from "node-cron";
 import { syncWeLoveDevs } from "../services/API_welovedevs/welovedev.sync.js";
-import { syncLocalJSON } from "../services/API_local/local.sync.js";
 
-if (process.env.NODE_ENV !== "test") {
-      cron.schedule("* * * * *", async () => {
-            console.log("Sync global (toutes les 1 min pour test)...");
+let syncRunning = false;
+
+const cronEnabled =
+      process.env.ENABLE_WELOVEDEVS_CRON === "true" || process.env.NODE_ENV === "production";
+const cronSchedule = process.env.WELOVEDEVS_CRON_SCHEDULE || "*/10 * * * *";
+
+if (process.env.NODE_ENV !== "test" && cronEnabled) {
+      cron.schedule(cronSchedule, async () => {
+            if (syncRunning) {
+                  console.log("Sync ignorée: une exécution est déjà en cours.");
+                  return;
+            }
+
+            syncRunning = true;
+            console.log(`Sync WeLoveDevs (schedule: ${cronSchedule})...`);
 
             try {
-                  await Promise.all([
-                        syncWeLoveDevs(),
-                        syncLocalJSON(),
-                  ]);
-                  console.log("Tous les syncs terminés");
+                  await syncWeLoveDevs();
+                  console.log("Sync WeLoveDevs terminée");
             } catch (error) {
-                  console.error("Erreur globale:", error.message);
+                  console.error("Erreur sync WeLoveDevs:", error.message);
+            } finally {
+                  syncRunning = false;
             }
       });
 
-      console.log("Cron jobs démarrés");
+      console.log("Cron jobs démarrés (WeLoveDevs uniquement)");
+} else {
+      console.log("Cron jobs WeLoveDevs désactivés");
 }
+

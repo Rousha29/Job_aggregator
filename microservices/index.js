@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { ingestJobs } from './services/API_welovedevs/welovedev.ingest.js';
+import { syncWeLoveDevs } from './services/API_welovedevs/welovedev.sync.js';
+import { syncLocalJSON } from './services/API_local/local.sync.js';
 
 dotenv.config();
 
@@ -8,20 +9,35 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '20mb' }));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
       res.json({ status: 'OK', message: 'Microservices is running' });
 });
 
-// Ingest endpoint
+const sendSyncError = (res, err) => {
+      const status = Number.isInteger(err?.status) ? err.status : 500;
+      res.status(status).json({ error: err.message });
+};
+
+// Ingest endpoint (WeLoveDevs)
 app.post('/api/ingest', async (req, res) => {
       try {
-            const result = await ingestJobs();
+            const result = await syncWeLoveDevs();
             res.json({ success: true, ...result });
       } catch (err) {
-            res.status(500).json({ error: err.message });
+            sendSyncError(res, err);
+      }
+});
+
+// Ingest local JSON endpoint
+app.post('/api/ingest/local', async (req, res) => {
+      try {
+            const result = await syncLocalJSON(req.body);
+            res.json({ success: true, ...result });
+      } catch (err) {
+            sendSyncError(res, err);
       }
 });
 

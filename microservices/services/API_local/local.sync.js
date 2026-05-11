@@ -6,12 +6,18 @@ import { mapLocalJob } from './local.mapper.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export async function syncLocalJSON() {
+export async function syncLocalJSON(data) {
   try {
-    const filePath = path.join(__dirname, '../../data/offres.json');
-    const raw = fs.readFileSync(filePath, 'utf-8');
-    const data = JSON.parse(raw);
-    const offres = data.offres ?? [];
+    // Si data est fourni (depuis le backend), l'utiliser. Sinon, lire le fichier.
+    let offres = [];
+    if (data && typeof data === 'object') {
+      offres = data.offres ?? [];
+    } else {
+      const filePath = path.join(__dirname, '../../data/offres.json');
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      const parsed = JSON.parse(raw);
+      offres = parsed.offres ?? [];
+    }
 
     let synced = 0;
     let skipped = 0;
@@ -20,6 +26,13 @@ export async function syncLocalJSON() {
       const job = mapLocalJob(offre);
 
       if (!job) {
+        skipped++;
+        continue;
+      }
+
+      // Validation supplémentaire: avoir au moins une description ou un salaire
+      if (!job.description && !job.salary_min && !job.salary_max) {
+        console.debug(`Offre ${job.externalId} rejetée: aucune description ni salaire`);
         skipped++;
         continue;
       }

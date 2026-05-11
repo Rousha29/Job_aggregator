@@ -13,23 +13,23 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  background: #ffffff;
-  border: 1px solid #ddd;
-  color: #555;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
   cursor: pointer;
   transition: all 0.2s;
   flex-shrink: 0;
 }
 
 .trigger:hover {
-  border-color: #1a1a1a;
-  color: #1a1a1a;
+  border-color: var(--text-h);
+  color: var(--text-h);
 }
 
 .triggerActive {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
-  color: #ffffff;
+  background: var(--text-h);
+  border-color: var(--text-h);
+  color: var(--bg);
 }
 
 .badge {
@@ -38,20 +38,20 @@
   right: -6px;
   width: 18px;
   height: 18px;
-  background: #1a1a1a;
-  color: #fff;
+  background: var(--text-h);
+  color: var(--bg);
   font-size: 0.65rem;
   font-weight: 600;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #f5f4f0;
+  border: 2px solid var(--code-bg);
 }
 
 .triggerActive .badge {
-  background: #fff;
-  color: #1a1a1a;
+  background: var(--bg);
+  color: var(--text-h);
 }
 
 /* ── Panel ── */
@@ -60,9 +60,9 @@
   top: calc(100% + 8px);
   right: 0;
   width: 280px;
-  background: #ffffff;
-  border: 1px solid #e0ddd6;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
   z-index: 200;
   animation: slideDown 0.15s ease;
 }
@@ -84,7 +84,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem 0.75rem;
-  border-bottom: 1px solid #f0ede8;
+  border-bottom: 1px solid var(--border);
 }
 
 .panelTitle {
@@ -92,7 +92,7 @@
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #1a1a1a;
+  color: var(--text-h);
 }
 
 .resetBtn {
@@ -100,7 +100,7 @@
   border: none;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.78rem;
-  color: #999;
+  color: var(--text);
   cursor: pointer;
   padding: 0;
   transition: color 0.2s;
@@ -108,7 +108,7 @@
 }
 
 .resetBtn:hover {
-  color: #1a1a1a;
+  color: var(--text-h);
 }
 
 /* ── Section ── */
@@ -121,7 +121,7 @@
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #aaa;
+  color: var(--text);
   margin: 0 0 0.75rem;
 }
 
@@ -143,8 +143,8 @@
   appearance: none;
   width: 16px;
   height: 16px;
-  border: 1.5px solid #ddd;
-  background: #fafaf8;
+  border: 1.5px solid var(--border);
+  background: var(--social-bg);
   cursor: pointer;
   position: relative;
   flex-shrink: 0;
@@ -152,8 +152,8 @@
 }
 
 .checkbox:checked {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
+  background: var(--text-h);
+  border-color: var(--text-h);
 }
 
 .checkbox:checked::after {
@@ -163,8 +163,8 @@
   top: 1px;
   width: 8px;
   height: 5px;
-  border-left: 2px solid #fff;
-  border-bottom: 2px solid #fff;
+  border-left: 2px solid var(--bg);
+  border-bottom: 2px solid var(--bg);
   transform: rotate(-45deg);
 }
 
@@ -180,20 +180,20 @@ input[type='radio'].checkbox:checked::after {
   transform: translate(-50%, -50%);
   width: 6px;
   height: 6px;
-  background: #fff;
+  background: var(--bg);
   border-radius: 50%;
   border: none;
 }
 
 .optionLabel {
   font-size: 0.88rem;
-  color: #333;
+  color: var(--text-h);
   line-height: 1;
 }
 
 /* ── Divider ── */
 .divider {
   height: 1px;
-  background: #f0ede8;
+  background: var(--border);
   margin: 0;
 }

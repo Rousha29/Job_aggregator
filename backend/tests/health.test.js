@@ -21,7 +21,8 @@ jest.unstable_mockModule('axios', () => ({
 
 // Mock import controller to avoid importing microservices
 jest.unstable_mockModule('../src/controllers/import.controller.js', () => ({
-  importOffers: jest.fn((req, res) => res.json({ success: true, inserted: 0, skipped: 0 }))
+  importOffers: jest.fn((req, res) => res.json({ success: true, inserted: 0, skipped: 0 })),
+  importLocalJSON: jest.fn((req, res) => res.json({ success: true, inserted: 0, skipped: 0 }))
 }));
 
 const { default: app } = await import('../src/app.js');

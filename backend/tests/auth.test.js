@@ -14,7 +14,7 @@ jest.unstable_mockModule('node-cron', () => ({
 // Mock modules
 jest.unstable_mockModule('../src/config/db.js', () => ({
   default: {
-    query: jest.fn(),
+    query: jest.fn().mockResolvedValue({ rows: [] }),
   },
 }));
 
@@ -46,12 +46,13 @@ jest.unstable_mockModule('axios', () => ({
 
 // Mock import controller to avoid importing microservices
 jest.unstable_mockModule('../src/controllers/import.controller.js', () => ({
-  importOffers: jest.fn((req, res) => res.json({ success: true, inserted: 0, skipped: 0 }))
+  importOffers: jest.fn((req, res) => res.json({ success: true, inserted: 0, skipped: 0 })),
+  importLocalJSON: jest.fn((req, res) => res.json({ success: true, inserted: 0, skipped: 0 }))
 }));
 
 // Import after mocking
-const { default: app } = await import('../src/app.js');
 const { default: pool } = await import('../src/config/db.js');
+const { default: app } = await import('../src/app.js');
 const { default: bcrypt } = await import('bcrypt');
 const { default: jwt } = await import('jsonwebtoken');
 

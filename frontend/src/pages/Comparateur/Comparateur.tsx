@@ -1,5 +1,6 @@
 import styles from './Comparateur.module.css';
 import BurgerMenu from '../../components/BurgerMenu/BurgerMenu';
+import ThemeToggleButton from '../../components/ThemeToggleButton/ThemeToggleButton';
 
 export default function Comparateur() {
     return (
@@ -11,7 +12,10 @@ export default function Comparateur() {
                         <span className={styles.logoMark}>JA</span>
                         <span className={styles.logoText}>Job Aggregator</span>
                     </div>
-                    <BurgerMenu />
+                    <div className={styles.headerActions}>
+                        <ThemeToggleButton className={styles.iconButton} />
+                        <BurgerMenu />
+                    </div>
                 </div>
             </header>
 
@@ -20,7 +24,7 @@ export default function Comparateur() {
                 {/* ── Hero ── */}
                 <section className={styles.hero}>
                     <h1 className={styles.heroTitle}>
-                        Notre IA compare <em>vos offres</em> favoris
+                        Notre IA compare <em>vos offres</em> favories
                     </h1>
                 </section>
 
