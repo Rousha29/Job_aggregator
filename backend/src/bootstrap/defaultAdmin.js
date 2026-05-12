@@ -1,9 +1,16 @@
 import bcrypt from 'bcrypt';
 import pool from '../config/db.js';
 
-const DEFAULT_ADMIN_EMAIL = 'admin@jobaggregator.com';
-const DEFAULT_ADMIN_PASSWORD = 'Admin123!';
-const DEFAULT_ADMIN_FULL_NAME = 'Admin';
+const DEFAULT_ADMIN_EMAIL = process.env.DEFAULT_ADMIN_EMAIL;
+const DEFAULT_ADMIN_PASSWORD = process.env.DEFAULT_ADMIN_PASSWORD;
+const DEFAULT_ADMIN_FULL_NAME = 'admin';
+
+if (!DEFAULT_ADMIN_EMAIL) {
+      throw new Error('DEFAULT_ADMIN_EMAIL est manquant dans les variables d\'environnement');
+}
+if (!DEFAULT_ADMIN_PASSWORD) {
+      throw new Error('DEFAULT_ADMIN_PASSWORD est manquant dans les variables d\'environnement');
+}
 
 export const ensureDefaultAdminAccount = async () => {
       const roleResult = await pool.query(
