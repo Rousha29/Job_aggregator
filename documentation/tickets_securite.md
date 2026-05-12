@@ -93,7 +93,7 @@ Mettre en place un middleware de validation centralisé basé sur Zod. Toutes le
 // schemas/auth.ts
 export const registerSchema = z.object({
   email: z.string().email().max(255),
-  password: z.string().min(12).max(128),
+  password: z.string().min(8)).max(128),
 });
 
 // routes/auth.ts
