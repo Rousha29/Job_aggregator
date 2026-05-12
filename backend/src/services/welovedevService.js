@@ -1,10 +1,9 @@
 import pool from '../config/db.js';
 
-export const fetchJobs = async (page = 0, size = 20, q = '') => {
+export const fetchJobs = async (page = 0, size = 20, q = '', contractTypes = [], remote = [], salaryMin = null) => {
   const offset = page * size;
-
-  let query = `SELECT * FROM offers`;
-  let countQuery = `SELECT COUNT(*) FROM offers`;
+  let query = `SELECT * FROM offers WHERE 1=1`;
+  let countQuery = `SELECT COUNT(*) FROM offers WHERE 1=1`;
   let params = [];
   let paramIndex = 1;
 
@@ -16,8 +15,33 @@ export const fetchJobs = async (page = 0, size = 20, q = '') => {
     paramIndex++;
   }
 
+  if (contractTypes.length > 0) {
+    query += ` AND contract_type = ANY($${paramIndex}::text[])`;
+    countQuery += ` AND contract_type = ANY($${paramIndex}::text[])`;
+    params.push(contractTypes);
+    paramIndex++;
+  }
+
+  if (remote.length > 0) {
+    const remoteValues = remote.map(r => r === 'remote');
+    query += ` AND remote = ANY($${paramIndex})`;
+    countQuery += ` AND remote = ANY($${paramIndex})`;
+    params.push(remoteValues);
+    paramIndex++;
+  }
+
+  if (salaryMin) {
+    query += ` AND salary_min >= $${paramIndex}`;
+    countQuery += ` AND salary_min >= $${paramIndex}`;
+    params.push(salaryMin);
+    paramIndex++;
+  }
+
   query += ` ORDER BY fetched_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
   const queryParams = [...params, size, offset];
+
+  console.log('SQL:', query);
+  console.log('Params:', params);
 
   try {
     const [res, countRes] = await Promise.all([
@@ -26,34 +50,23 @@ export const fetchJobs = async (page = 0, size = 20, q = '') => {
     ]);
 
     const totalCount = parseInt(countRes.rows[0].count);
-
     const values = res.rows.map(row => ({
       id: row.id,
       title: row.title,
       source: row.source,
-      smallCompany: {
-        companyName: row.company,
-      },
+      smallCompany: { companyName: row.company },
       formattedPlaces: row.location ? [row.location] : [],
       contractTypes: [mapContractBack(row.contract_type)],
       details: {
-        salary: {
-          min: row.salary_min,
-          max: row.salary_max,
-        },
-        remotePolicy: {
-          frequency: row.remote ? 'remote' : 'onsite',
-        }
+        salary: { min: row.salary_min, max: row.salary_max },
+        remotePolicy: { frequency: row.remote ? 'remote' : 'onsite' }
       },
       descriptionPreview: row.description,
       publishDate: row.fetched_at ? new Date(row.fetched_at).getTime() * 1000 : null,
       seoAlias: row.source_url ? row.source_url.split('/').pop() : null,
     }));
 
-    return {
-      values,
-      totalCount
-    };
+    return { values, totalCount };
   } catch (error) {
     console.error('Database error in fetchJobs:', error);
     throw error;
@@ -66,6 +79,8 @@ const mapContractBack = (type) => {
     'alternance': 'alternance',
     'CDI': 'permanent',
     'CDD': 'contract',
+    'freelance': 'freelance',
+    'Autres': 'other',
   };
-  return map[type] || 'other';
+  return map[type] ?? type;
 };

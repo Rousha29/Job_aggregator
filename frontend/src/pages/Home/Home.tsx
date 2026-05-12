@@ -31,6 +31,15 @@ interface Offer {
 
 const PAGE_SIZE = 20;
 
+// Mapping filtre frontend → valeur DB
+const CONTRACT_TYPE_MAP: Record<string, string> = {
+  permanent: 'CDI',
+  internship: 'stage',
+  alternance: 'alternance',
+  freelance: 'freelance',
+  contract: 'CDD',
+};
+
 const formatContract = (contract: string) => {
   const map: Record<string, string> = {
     permanent: 'CDI',
@@ -38,6 +47,7 @@ const formatContract = (contract: string) => {
     alternance: 'Alternance',
     freelance: 'Freelance',
     contract: 'CDD',
+    other: 'Autres',
   };
   return map[contract] ?? contract;
 };
@@ -53,7 +63,6 @@ const formatRemote = (remote: string) => {
 
 export default function Home() {
   const navigate = useNavigate();
-  const [offers, setOffers] = useState<Offer[]>([]);
   const [filtered, setFiltered] = useState<Offer[]>([]);
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState<Filters>({ contractTypes: [], remote: [], salaryMin: null });
@@ -65,6 +74,11 @@ export default function Home() {
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
+  const handleFiltersChange = (newFilters: Filters) => {
+    setPage(0);
+    setFilters(newFilters);
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -74,17 +88,24 @@ export default function Home() {
 
     setLoading(true);
 
+    // Mappe les valeurs frontend → valeurs DB
+    const mappedContractTypes = filters.contractTypes.map(
+      (c) => CONTRACT_TYPE_MAP[c] ?? c
+    );
+
     api.get('/offers/jobs', {
       params: {
         page,
         size: PAGE_SIZE,
-        q: search
+        q: search || undefined,
+        contractTypes: mappedContractTypes.length > 0 ? mappedContractTypes : undefined,
+        remote: filters.remote.length > 0 ? filters.remote : undefined,
+        salaryMin: filters.salaryMin ?? undefined,
       }
     })
       .then((res) => {
         const data = res.data;
         const list = data.values ?? [];
-        setOffers(list);
         setFiltered(list);
         setTotal(data.totalCount ?? 0);
         setLoading(false);
@@ -95,27 +116,7 @@ export default function Home() {
         setError('Impossible de charger les offres');
         setLoading(false);
       });
-  }, [navigate, page, search]);
-
-  useEffect(() => {
-    setFiltered(
-      offers.filter((o) => {
-        const matchContract =
-          filters.contractTypes.length === 0 ||
-          o.contractTypes?.some((c) => filters.contractTypes.includes(c));
-
-        const matchRemote =
-          filters.remote.length === 0 ||
-          filters.remote.includes(o.details?.remotePolicy?.frequency ?? '');
-
-        const matchSalary =
-          !filters.salaryMin ||
-          (o.details?.salary?.min ?? 0) >= filters.salaryMin;
-
-        return matchContract && matchRemote && matchSalary;
-      })
-    );
-  }, [filters, offers]);
+  }, [navigate, page, search, filters]);
 
   const formatSalary = (offer: Offer) => {
     const s = offer.details?.salary;
@@ -202,7 +203,7 @@ export default function Home() {
                 </button>
               )}
             </div>
-            <FilterPanel onFiltersChange={setFilters} />
+            <FilterPanel onFiltersChange={handleFiltersChange} />
           </div>
           <p className={styles.resultCount}>
             {loading
@@ -236,7 +237,7 @@ export default function Home() {
                       <div className={styles.cardMeta}>
                         <span className={styles.company}>{getCompany(offer)}</span>
                         {offer.source === 'local' && (
-                          <span className={styles.sourceBadge}>Source de données locale</span>
+                          <span className={styles.sourceBadge}>Source locale</span>
                         )}
                         <span className={styles.date}>{formatDate(offer.publishDate)}</span>
                       </div>

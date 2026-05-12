@@ -24,12 +24,12 @@ const normalizeContractType = (contracts) => {
   if (keys.some(k => k === 'apprenticeship' || k === 'alternance')) return 'alternance';
   if (keys.some(k => k === 'permanent' || k === 'CDI')) return 'CDI';
   if (keys.some(k => k === 'temporary' || k === 'CDD' || k === 'contract')) return 'CDD';
-  if (keys.some(k => k === 'freelance')) return 'Autres';
+  if (keys.some(k => k === 'freelance')) return 'freelance';
   return 'Autres';
 };
 
 const mapJob = (job) => {
-  const companyName = job.smallCompany?.companyName?.trim() 
+  const companyName = job.smallCompany?.companyName?.trim()
     || (typeof job.company === 'string' ? job.company.trim() : job.company?.name?.trim());
   if (!companyName) return null;
 
@@ -49,32 +49,50 @@ const mapJob = (job) => {
 };
 
 export const ingestJobs = async () => {
-  const data = await fetchFromApi(0, 50);
-  const offers = data.values ?? [];
-  let ingested = 0;
+  let page = 0;
+  const size = 50;
+  let totalIngested = 0;
+  let hasMore = true;
 
-  for (const raw of offers) {
-    const o = mapJob(raw);
-    if (!o) continue;
+  while (hasMore) {
+    console.log(`Fetching page ${page}...`);
+    const data = await fetchFromApi(page, size);
+    const offers = data.values ?? [];
 
-    try {
-      await pool.query(
-        `INSERT INTO offers (external_id, title, description, company, location, contract_type, salary_min, salary_max, remote, source_url, source, fetched_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,NOW())
-         ON CONFLICT (external_id, source) DO UPDATE SET
-           title=$2, description=$3, company=$4, location=$5, contract_type=$6,
-           salary_min=$7, salary_max=$8, remote=$9, source_url=$10`,
-        [o.externalId, o.title, o.description, o.company, o.location,
-         o.contract_type, o.salary_min, o.salary_max, o.remote,
-         o.source_url, o.source]
-      );
-      ingested++;
-    } catch (err) {
-      console.error(`Error inserting offer ${o.externalId}:`, err.message);
+    if (offers.length === 0) {
+      hasMore = false;
+      break;
     }
 
+    for (const raw of offers) {
+      const o = mapJob(raw);
+      if (!o) continue;
+
+      try {
+        await pool.query(
+          `INSERT INTO offers (external_id, title, description, company, location, contract_type, salary_min, salary_max, remote, source_url, source, fetched_at)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,NOW())
+           ON CONFLICT (external_id) DO UPDATE SET
+             title=$2, description=$3, company=$4, location=$5, contract_type=$6,
+             salary_min=$7, salary_max=$8, remote=$9, source_url=$10`,
+          [o.externalId, o.title, o.description, o.company, o.location,
+           o.contract_type, o.salary_min, o.salary_max, o.remote,
+           o.source_url, o.source]
+        );
+        totalIngested++;
+      } catch (err) {
+        console.error(`Error inserting offer ${o.externalId}:`, err.message);
+      }
+
+      await delay(100);
+    }
+
+    console.log(`Page ${page} done — ${totalIngested} offres ingérées au total`);
+    page++;
+
+    if (offers.length < size) hasMore = false;
     await delay(1000);
   }
 
-  return { ingested };
+  return { ingested: totalIngested };
 };
