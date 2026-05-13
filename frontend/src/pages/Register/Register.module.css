@@ -148,3 +148,34 @@
 .footer a:hover {
   opacity: 0.6;
 }
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .page {
+    align-items: flex-start;
+    padding: 2rem 1rem;
+  }
+ 
+  .card {
+    padding: 2rem 1.25rem;
+    box-shadow: none;
+  }
+ 
+  .title {
+    font-size: 1.6rem;
+  }
+ 
+  .row {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+ 
+  .input {
+    font-size: 1rem; 
+  }
+ 
+  .button {
+    padding: 1rem;
+    font-size: 0.95rem;
+  }
+}
