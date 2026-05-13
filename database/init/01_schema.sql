@@ -1,3 +1,7 @@
+CREATE EXTENSION IF NOT EXISTS vector; -- extension pour vectorisation pour stocker les embeddings
+ALTER TABLE offers ADD COLUMN IF NOT EXISTS embedding vector(384);
+CREATE INDEX IF NOT EXISTS idx_offers_embedding ON offers USING ivfflat (embedding vector_cosine_ops); -- index pour accélérer les recherches de similarité
+
 CREATE TABLE roles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(50) NOT NULL UNIQUE
