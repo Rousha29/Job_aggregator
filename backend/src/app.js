@@ -10,8 +10,11 @@ import favoritesRoutes from './routes/favorites.routes.js';
 import { authMiddleware } from './middlewares/auth.middleware.js';
 import adminRoutes from './routes/admin.routes.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
+import helmet from 'helmet';
 
 const app = express();
+
+app.use(helmet());
 
 app.use(cors({
   origin: process.env.CORS_ORIGIN,
