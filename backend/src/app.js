@@ -14,7 +14,8 @@ import { errorMiddleware } from './middlewares/error.middleware.js';
 const app = express();
 
 app.use(cors({
-  origin: '*',
+  origin: process.env.CORS_ORIGIN,
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));

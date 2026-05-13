@@ -179,7 +179,7 @@ jobs:
         run: curl -f http://localhost:5001/health || exit 1
 
       - name: Health check frontend
-        run: curl -f http://localhost:3000/ || exit 1
+        run: curl -f http://localhost:5173/ || exit 1
 
       - name: Stop stack
         run: docker compose down
