@@ -7,22 +7,23 @@ Contacter l'équipe sur Teams si quelqu'un trouve une faille
 
 ## Gestion des secrets (SEC-001)
 
-### Ce qui a changé
-- Plus aucun secret hardcodé dans le code source
-- `JWT_SECRET`, `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD` sont maintenant obligatoires en variables d'environnement — l'application refuse de démarrer s'ils sont absents
-- Le fichier `backend/.env` est exclu du tracking git (`.gitignore`)
+### C'est quoi le problème ?
+Si des mots de passe ou des clés secrètes sont écrits directement dans le code, n'importe qui ayant accès au dépôt git peut les lire et s'en servir.
 
-### Configuration pour les nouveaux développeurs
+### Ce qui a changé
+- Plus aucun secret écrit directement dans le code
+- Les informations sensibles (`JWT_SECRET`, `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD`) sont stockées dans un fichier `.env` sur le serveur, jamais dans git
+- Si ces variables sont absentes au démarrage, l'application refuse de se lancer
+
+### Pour les nouveaux développeurs
 1. Copier `.env.example` → `backend/.env`
 2. Remplir chaque valeur (ne jamais committer ce fichier)
-3. Générer un JWT_SECRET sécurisé dans le terminal : `openssl rand -base64 32`
+3. Générer un JWT_SECRET sécurisé : `openssl rand -base64 32`
 
-### Outil de détection de secrets : Gitleaks
-Gitleaks est un outil d'analyse statique qui scanne les dépôts git pour détecter les secrets hardcodés (clés API, tokens, mots de passe) avant qu'ils ne soient commités.
+### Outil : Gitleaks
+Gitleaks scanne automatiquement les fichiers avant chaque commit et bloque si un secret est détecté par erreur.
 
-Un hook pre-commit est configuré dans `.git/hooks/pre-commit`. Il scanne automatiquement les fichiers staged avant chaque commit et bloque si un secret est détecté.
-
-**Installation (obligatoire pour contribuer) :**
+**Installation :**
 ```bash
 wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.4/gitleaks_8.18.4_linux_x64.tar.gz
 tar -xzf gitleaks_8.18.4_linux_x64.tar.gz
@@ -35,159 +36,175 @@ Vérifier l'installation avec `gitleaks version`
 
 ## Validation des entrées (SEC-002)
 
-### Ce qui a changé
-- Middleware `validate` créé dans `src/middlewares/validate.js` — valide et filtre les données de chaque requête avant qu'elles atteignent le controller
-- Schémas Zod créés dans `src/schemas/auth.js` pour les routes register et login
-- Tout champ non prévu dans le schéma est supprimé silencieusement (protection contre l'injection de champs comme `role: "admin"`)
-- En cas de données invalides : retour `400` avec message d'erreur, le controller n'est jamais appelé
+### C'est quoi le problème ?
+Sans vérification, un utilisateur peut envoyer n'importe quoi au serveur — un champ `role: "admin"` pour se promouvoir, un email mal formé, ou un texte trop long pour planter l'application.
 
-### Règles de validation register
-- `nom`, `prenom` : string non vide
+### Ce qui a changé
+- Chaque requête est filtrée avant d'atteindre le code métier : les champs inconnus sont supprimés, les formats invalides sont rejetés
+- Si les données ne sont pas conformes, le serveur répond `400` et le traitement s'arrête là
+
+### Règles appliquées à l'inscription
+- `nom`, `prenom` : texte non vide
 - `mail` : format email valide
-- `password` : 8 à 128 caractères
-- `confirmation` : string
+- `password` : entre 8 et 128 caractères
+- `confirmation` : texte
 
 ### Outil utilisé
-[Zod](https://zod.dev) — librairie de validation et parsing de schémas TypeScript/JavaScript.
+[Zod](https://zod.dev) — librairie qui vérifie et nettoie les données selon un schéma défini.
 
 ---
 
-## Middleware d'erreur centralisé (SEC-003)
+## Gestion des erreurs (SEC-003)
+
+### C'est quoi le problème ?
+Quand le serveur plante, il peut afficher des détails techniques dans la réponse — le nom d'une table en base, la structure du code, la clé utilisée. Ces informations sont précieuses pour un attaquant.
 
 ### Ce qui a changé
-- Classe `AppError` créée dans `src/errors/AppError.js` — permet de créer des erreurs intentionnelles avec un `statusCode`, un `message` et un `code` optionnel
-- Middleware `errorMiddleware` mis à jour dans `src/middlewares/error.middleware.js` :
-  - Si `err instanceof AppError` → le message est envoyé au client avec le bon status HTTP
-  - Sinon → le message complet est loggé côté serveur, le client reçoit uniquement `"Erreur interne du serveur"`
-- En production, la stack trace n'est jamais exposée au client
-
-### Pourquoi c'est important
-Sans cette distinction, une erreur SQL ou JWT plantée pouvait envoyer des détails techniques au client (nom de table, structure de la base, clé utilisée) — des informations exploitables par un attaquant.
-
-### Utilisation dans le code
-```js
-import { AppError } from '../errors/AppError.js';
-
-// Erreur intentionnelle — le message part au client
-throw new AppError(404, 'Utilisateur introuvable');
-
-// Erreur avec code identifiant
-throw new AppError(401, 'Non autorisé', 'INVALID_TOKEN');
-```
+- Les erreurs intentionnelles (ex: "utilisateur introuvable") envoient un message clair au client
+- Les erreurs inattendues (pannes, bugs) sont loggées côté serveur mais le client reçoit uniquement "Erreur interne du serveur"
+- En production, aucun détail technique ne sort du serveur
 
 ---
 
 ## Hashage des mots de passe (SEC-004)
 
+### C'est quoi le problème ?
+Si la base de données est compromise, un attaquant ne doit pas pouvoir lire les mots de passe. Stocker un mot de passe en clair, c'est comme laisser les clés sur la porte.
+
 ### Ce qui a changé
-- `bcrypt` utilisé pour hasher les mots de passe à l'inscription avec `saltRounds: 12`
-- La logique est centralisée dans `backend/src/services/password.js` (`hashPassword`, `verifyPassword`)
-- Le mot de passe en clair n'est jamais stocké ni loggé
+- Les mots de passe sont transformés en une empreinte illisible (hash) avant d'être stockés
+- Même l'équipe de développement ne peut pas retrouver le mot de passe d'un utilisateur
+- La logique est centralisée dans `backend/src/services/password.js`
 
 ### Pourquoi bcrypt
-bcrypt est conçu pour être lent, ce qui rend les attaques par force brute coûteuses. Le salt intégré garantit que deux mots de passe identiques produisent des hashs différents.
+bcrypt est conçu pour être volontairement lent, ce qui rend les attaques par force brute (tester des milliers de mots de passe) très coûteuses en temps.
 
 ---
 
 ## Vérification des mots de passe compromis (SEC-005)
 
-### Ce qui a changé
-- À l'inscription, le mot de passe est vérifié contre la base de données HaveIBeenPwned
-- Si le mot de passe a déjà été exposé dans une fuite de données, l'inscription est refusée avec un `400`
+### C'est quoi le problème ?
+Beaucoup d'utilisateurs réutilisent des mots de passe qui ont déjà été volés lors de fuites de données sur d'autres sites. Ces mots de passe sont connus des attaquants.
 
-### Comment ça marche (k-anonymity)
-Le mot de passe n'est jamais envoyé à HIBP. Seuls les 5 premiers caractères du hash SHA-1 sont transmis. L'API retourne toutes les correspondances, et la comparaison se fait localement — HIBP ne sait jamais quel mot de passe est vérifié.
+### Ce qui a changé
+- À l'inscription, le mot de passe est vérifié contre la base de données HaveIBeenPwned (HIBP)
+- Si le mot de passe a déjà été exposé quelque part, l'inscription est refusée
+
+### Comment ça marche sans exposer le mot de passe
+Le mot de passe n'est jamais envoyé à HIBP. Seuls les 5 premiers caractères d'une empreinte sont transmis. HIBP retourne une liste de correspondances, et la comparaison se fait localement — HIBP ne sait jamais quel mot de passe est vérifié.
 
 ---
 
-## Rate limiting sur le login (SEC-006)
+## Limitation des tentatives de connexion (SEC-006)
+
+### C'est quoi le problème ?
+Sans limite, un attaquant peut tester des milliers de mots de passe automatiquement jusqu'à trouver le bon (attaque par force brute).
 
 ### Ce qui a changé
-- La route `POST /api/auth/login` est limitée à **5 tentatives par IP toutes les 15 minutes**
-- Au-delà : réponse `429` avec message d'erreur explicite
-
-### Pourquoi
-Sans cette limite, un attaquant peut tenter des milliers de mots de passe (brute force / credential stuffing) sans obstacle.
+- La route de connexion est limitée à **5 tentatives par adresse IP toutes les 15 minutes**
+- Au-delà, le serveur répond `429` avec un message d'erreur
 
 ---
 
-## JWT dans un cookie httpOnly (SEC-008)
+## Token de session dans un cookie sécurisé (SEC-008)
+
+### C'est quoi le problème ?
+Après la connexion, le serveur donne un token à l'utilisateur pour prouver son identité. Si ce token est stocké dans le navigateur de façon accessible, un script malveillant peut le voler et usurper l'identité de l'utilisateur.
 
 ### Ce qui a changé
-- Le token JWT n'est plus retourné dans le corps de la réponse ni stocké dans le `localStorage`
-- Il est placé dans un **cookie `httpOnly`** par le serveur à la connexion
-- Le frontend ne peut pas lire ce cookie en JavaScript — il est envoyé automatiquement par le navigateur
+- Le token n'est plus visible dans le navigateur
+- Il est stocké dans un cookie que JavaScript ne peut pas lire
+- Le navigateur l'envoie automatiquement à chaque requête, sans que le code frontend y touche
 
-### Attributs du cookie
-- `httpOnly: true` — inaccessible depuis JavaScript (protection XSS)
-- `secure: true` en production — transmis uniquement en HTTPS
-- `sameSite: 'lax'` — protection CSRF de base
-- `maxAge: 24h`
+### Protections appliquées au cookie
+- Invisible pour JavaScript — même en cas d'injection de script malveillant
+- Transmis uniquement en HTTPS en production
+- Expire au bout de 24h
 
 ---
 
-## Protection des routes admin (SEC-009)
+## Protection des pages admin (SEC-009)
+
+### C'est quoi le problème ?
+Sans vérification côté frontend, n'importe quel utilisateur connecté pourrait accéder aux pages d'administration en tapant directement l'URL dans son navigateur.
 
 ### Ce qui a changé
-- Composant `AdminRoute` créé côté frontend (`src/components/AdminRoute.tsx`)
-- Les routes `/admin/*` sont enveloppées dans ce composant
-- Si l'utilisateur n'est pas connecté → redirection `/login`
-- Si l'utilisateur n'est pas admin → redirection `/home`
+- Les pages `/admin` vérifient si l'utilisateur est connecté et s'il a le rôle admin
+- Si non connecté → redirection vers la page de connexion
+- Si connecté mais pas admin → redirection vers la page d'accueil
 
 ---
 
 ## Protection IDOR – Favoris (SEC-010)
 
-### Ce qu'est l'IDOR
-L'IDOR (Insecure Direct Object Reference) est une faille qui permet à un utilisateur d'accéder aux données d'un autre en modifiant un identifiant dans l'URL (ex: `/users/42/favorites` → `/users/99/favorites`).
+### C'est quoi l'IDOR ?
+Imagine que l'URL de tes favoris soit `/api/favorites/42`. En changeant `42` par `99`, tu pourrais accéder aux favoris d'un autre utilisateur. C'est ça, l'IDOR : accéder aux données de quelqu'un d'autre en modifiant un identifiant.
 
 ### Ce qui a été vérifié
-- Dans `backend/src/routes/favorites.routes.js`, le `userId` est **toujours lu depuis `req.user.id`** (le JWT décodé par le middleware d'auth)
-- Il n'est jamais accepté depuis les paramètres d'URL ni le corps de la requête
-- Il est impossible pour un utilisateur de lire ou supprimer les favoris d'un autre, même en forgeant une requête
+- Dans les routes des favoris, l'identifiant de l'utilisateur est toujours lu depuis son token de connexion, jamais depuis l'URL
+- Il est donc impossible d'accéder aux favoris d'un autre utilisateur, même en forgeant la requête
 
-### Pattern sécurisé utilisé
+---
+
+## Protection injection SQL (SEC-011)
+
+### C'est quoi une injection SQL ?
+Imagine qu'un utilisateur tape son email dans un formulaire. Si le serveur construit sa requête en collant directement ce texte dedans, un utilisateur malveillant peut écrire du code SQL à la place d'un email et manipuler la base de données — lire des données, supprimer des tables, etc.
+
+### Ce qui a été vérifié
+Tous les fichiers qui parlent à la base de données ont été audités :
+- `authService.js`, `ingestionService.js`, `welovedevService.js`, `users.routes.js`, `admin.routes.js`
+- Dans chaque fichier, les valeurs saisies par l'utilisateur sont toujours transmises séparément de la requête, jamais collées dedans
+
+### Pourquoi c'est sécurisé
+La base de données reçoit deux choses distinctes : la question (fixe) et les valeurs (séparées). Elle ne peut donc jamais confondre une valeur utilisateur avec une instruction SQL.
+
+### Exemple
 ```js
-// Correct — userId depuis le token JWT
-const userId = req.user.id;
+// Dangereux — l'utilisateur peut écrire du SQL dans son email
+pool.query(`SELECT * FROM users WHERE email = '${email}'`);
 
-// Jamais ça — IDOR possible
-const userId = req.params.userId;
+// Sécurisé — la valeur est transmise séparément
+pool.query('SELECT * FROM users WHERE email = $1', [email]);
 ```
 
 ---
 
-## Rate limiting global (SEC-014)
+## Limitation globale des requêtes (SEC-014)
+
+### C'est quoi le problème ?
+Sans limite, quelqu'un pourrait bombarder le serveur de milliers de requêtes par seconde pour le ralentir ou le faire tomber, ou pour scraper toutes les offres d'un coup.
 
 ### Ce qui a changé
-- Un rate limiter global est appliqué sur toutes les routes : **100 requêtes par IP par minute**
-- Configuré dans `app.js` avec `express-rate-limit`
-
-### Pourquoi
-Protège l'API contre les abus généraux (scraping intensif, DDoS applicatif, énumération).
+- Toutes les routes sont limitées à **100 requêtes par adresse IP par minute**
+- Au-delà, le serveur répond `429`
 
 ---
 
-## En-têtes HTTP sécurisés (SEC-017)
+## En-têtes de sécurité HTTP (SEC-017)
+
+### C'est quoi le problème ?
+Par défaut, un navigateur fait confiance à beaucoup de choses. Un attaquant peut exploiter cette confiance pour afficher le site dans une fausse page, tromper le navigateur sur le type de fichier reçu, ou forcer une connexion non sécurisée.
 
 ### Ce qui a changé
-- `helmet` est activé en premier middleware dans `app.js`
-- Il positionne automatiquement une dizaine d'en-têtes HTTP de sécurité
+- Le serveur envoie maintenant des instructions au navigateur pour restreindre ces comportements
+- Ces instructions sont ajoutées automatiquement à chaque réponse
 
-### En-têtes ajoutés (exemples)
-- `X-Frame-Options: DENY` — empêche le clickjacking via `<iframe>`
-- `X-Content-Type-Options: nosniff` — empêche le MIME sniffing
-- `Strict-Transport-Security` — force HTTPS en production
-- `Content-Security-Policy` — restreint les sources de scripts/styles
+### Exemples de protections ajoutées
+- Le site ne peut pas être affiché dans une `<iframe>` sur un autre site (protection contre le clickjacking)
+- Le navigateur ne peut pas deviner le type d'un fichier reçu (protection contre le MIME sniffing)
+- En production, seules les connexions HTTPS sont acceptées
 
 ---
 
-## Configuration CORS (SEC-018)
+## Restriction des origines autorisées (SEC-018)
+
+### C'est quoi le problème ?
+Par défaut, n'importe quel site web pourrait faire des requêtes à notre API depuis le navigateur d'un utilisateur connecté et récupérer ses données.
 
 ### Ce qui a changé
-- CORS configuré avec une liste blanche via la variable d'environnement `CORS_ORIGIN`
-- `credentials: true` autorise l'envoi des cookies cross-origin
-- Les requêtes provenant d'une origine non autorisée sont bloquées
+- Seul le frontend officiel est autorisé à communiquer avec l'API
+- Toute requête venant d'un autre site est bloquée par le navigateur
 
 ### Configuration
 ```env
