@@ -12,10 +12,14 @@ import adminRoutes from './routes/admin.routes.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
 app.use(helmet());
+
+app.use(cookieParser());
+
 app.use(rateLimit({
   windowMs: 60 * 1000, // 1 minutes
   max: 100 // limit each IP to 100 requests per windowMs

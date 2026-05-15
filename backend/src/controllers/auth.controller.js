@@ -33,7 +33,13 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { token, role } = await loginUser(req.body);
-    res.status(200).json({ token, role });
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000 // 1 jour en ms
+    });
+    res.status(200).json({ role });
   } catch (err) {
     res.status(401).json({ error: 'Invalid credentials' });
   }

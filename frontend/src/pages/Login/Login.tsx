@@ -21,8 +21,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
   try {
     const res = await loginUser(form);
-    const { token, role } = res.data;
-    localStorage.setItem('token', token);
+    const { role } = res.data;
     localStorage.setItem('role', role);
 
     if (role === 'admin') {

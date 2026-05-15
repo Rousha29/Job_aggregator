@@ -66,7 +66,7 @@ describe('Users API', () => {
 
       const res = await request(app)
         .get('/api/users/me')
-        .set('Authorization', 'Bearer valid_token');
+        .set('Cookie', ['token=valid_token'])
 
       expect(res.statusCode).toBe(200);
       expect(res.body.email).toBe('test@example.com');
@@ -91,7 +91,7 @@ describe('Users API', () => {
 
       const res = await request(app)
         .get('/api/users/me')
-        .set('Authorization', 'Bearer invalid_token');
+        .set('Cookie', ['token=valid_token'])
 
       expect(res.statusCode).toBe(401);
       expect(res.body.error).toBe('Invalid token');

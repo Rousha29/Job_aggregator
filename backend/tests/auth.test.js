@@ -170,7 +170,6 @@ describe('Auth API', () => {
         });
 
       expect(res.statusCode).toBe(200);
-      expect(res.body.token).toBe('fake_token');
     });
 
     it('should return 401 if credentials are invalid', async () => {
