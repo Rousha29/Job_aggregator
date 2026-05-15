@@ -11,10 +11,17 @@ import { authMiddleware } from './middlewares/auth.middleware.js';
 import adminRoutes from './routes/admin.routes.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
 import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 
 const app = express();
 
 app.use(helmet());
+app.use(rateLimit({
+  windowMs: 60 * 1000, // 1 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+}));
+
+
 
 app.use(cors({
   origin: process.env.CORS_ORIGIN,
@@ -23,7 +30,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(express.json({ limit: '20mb' }));
+app.use(express.json({ limit: '100kb' }));
 app.use('/', healthRoutes);
 app.use('/api/test', testRoutes);
 app.use('/api/auth', authRoutes);
