@@ -197,6 +197,18 @@ Par défaut, un navigateur fait confiance à beaucoup de choses. Un attaquant pe
 
 ---
 
+## Limite sur la comparaison d'offres (SEC-016)
+
+### C'est quoi le problème ?
+La feature de comparaison accepte une liste d'IDs d'offres. Sans limite, quelqu'un pourrait envoyer une liste de 10 000 IDs et forcer le serveur à faire une requête énorme en base de données, le ralentissant ou le faisant tomber.
+
+### Ce qui a changé
+- La route `POST /api/offers/compare` n'accepte pas plus de **3 IDs**
+- En dessous de 1 ou au-dessus de 3 → le serveur répond `400` sans toucher à la base de données
+- Les IDs sont aussi vérifiés pour être des nombres entiers valides
+
+---
+
 ## Restriction des origines autorisées (SEC-018)
 
 ### C'est quoi le problème ?
