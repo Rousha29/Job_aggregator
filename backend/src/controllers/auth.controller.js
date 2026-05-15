@@ -1,4 +1,5 @@
 import { registerUser, loginUser } from '../services/authService.js';
+import { checkPassword } from '../services/hibp.js';
 
 export const register = async (req, res) => {
   try {
@@ -9,6 +10,11 @@ export const register = async (req, res) => {
     }
     if (password !== confirmation) {
       return res.status(400).json({ error: 'Passwords do not match' });
+    }
+
+    const isPwned = await checkPassword(password);
+    if (isPwned > 0) {
+      return res.status(400).json({ error: 'Password has been compromised' });
     }
 
     const user = await registerUser({

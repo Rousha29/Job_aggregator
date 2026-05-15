@@ -36,6 +36,11 @@ jest.unstable_mockModule('jsonwebtoken', () => ({
   ...mockJwt
 }));
 
+jest.unstable_mockModule('../src/services/hibp.js', () => ({
+  checkPassword: jest.fn().mockResolvedValue(0)
+}));
+
+
 // Mock axios
 jest.unstable_mockModule('axios', () => ({
   default: {
