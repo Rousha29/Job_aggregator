@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { AxiosRequestHeaders } from 'axios';
 import type { RegisterData, LoginData, AuthResponse, UpdateUserData } from '../types/auth';
 
 const API = axios.create({
@@ -16,8 +17,10 @@ export const updateProfile = (data: UpdateUserData) =>
 
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    const headers = (config.headers ?? {}) as AxiosRequestHeaders;
+    headers.Authorization = `Bearer ${token}`;
+    config.headers = headers;
   }
   return config;
 });

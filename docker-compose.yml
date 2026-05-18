@@ -53,6 +53,7 @@ services:
       - .env
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
+      - ENABLE_WELOVEDEVS_CRON=true
     networks:
       - app-network
     healthcheck:
@@ -65,15 +66,30 @@ services:
     build: ./ai-service
     ports:
       - "8000:8000"
-    env_file:
-      - .env
+    depends_on:
+      database:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
+      - OLLAMA_URL=http://ollama:11434
+    networks:
+      - app-network
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "ollama", "list"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
 
   database:
     image : pgvector/pgvector:pg15
@@ -102,3 +118,4 @@ networks:
 
 volumes:
   pgdata:
+  ollama_data:

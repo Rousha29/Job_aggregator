@@ -1,11 +1,20 @@
 import bcrypt from 'bcrypt';
 import pool from '../config/db.js';
 
-const DEFAULT_ADMIN_EMAIL = 'admin@jobaggregator.com';
-const DEFAULT_ADMIN_PASSWORD = 'Admin123!';
-const DEFAULT_ADMIN_FULL_NAME = 'Admin';
+const DEFAULT_ADMIN_EMAIL = process.env.DEFAULT_ADMIN_EMAIL;
+const DEFAULT_ADMIN_PASSWORD = process.env.DEFAULT_ADMIN_PASSWORD;
+const DEFAULT_ADMIN_FULL_NAME = process.env.DEFAULT_ADMIN_FULL_NAME || 'Admin';
+const ENABLE_DEFAULT_ADMIN = process.env.ENABLE_DEFAULT_ADMIN === 'true';
 
 export const ensureDefaultAdminAccount = async () => {
+      if (!ENABLE_DEFAULT_ADMIN) {
+            return;
+      }
+
+      if (!DEFAULT_ADMIN_EMAIL || !DEFAULT_ADMIN_PASSWORD) {
+            throw new Error('DEFAULT_ADMIN_EMAIL and DEFAULT_ADMIN_PASSWORD must be set');
+      }
+
       const roleResult = await pool.query(
             "SELECT id FROM roles WHERE name = 'admin' LIMIT 1"
       );

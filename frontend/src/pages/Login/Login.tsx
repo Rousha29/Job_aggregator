@@ -13,31 +13,39 @@ export default function Login() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!form.email || !form.password) {
-    alert('Tous les champs sont requis');
-    return;
-  }
-  try {
-    const res = await loginUser(form);
-    const { token, role } = res.data;
-    localStorage.setItem('token', token);
-    localStorage.setItem('role', role);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const formEl = e.currentTarget as HTMLFormElement;
+    const formData = new FormData(formEl);
+    const email = String(formData.get('email') || '').trim().toLowerCase();
+    const password = String(formData.get('password') || '').trim();
 
-    if (role === 'admin') {
-      navigate('/admin');
-    } else {
-      navigate('/home');
+    if (!email || !password) {
+      alert('Tous les champs sont requis');
+      return;
     }
-  } catch (err: unknown) {
-    const message =
-      typeof err === 'object' && err !== null && 'response' in err
-        ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
-        : undefined;
-    alert(message || 'Identifiants invalides');
-  }
-};
+    try {
+      const res = await loginUser({
+        email,
+        password,
+      });
+      const { token, role } = res.data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', role);
+
+      if (role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/home');
+      }
+    } catch (err: unknown) {
+      const message =
+        typeof err === 'object' && err !== null && 'response' in err
+          ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
+          : undefined;
+      alert(message || 'Identifiants invalides');
+    }
+  };
 
   return (
     <div className={styles.page}>
@@ -54,6 +62,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               name="email"
               type="email"
               placeholder="vous@exemple.com"
+              value={form.email}
               onChange={handleChange}
             />
           </div>
@@ -64,6 +73,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               name="password"
               type="password"
               placeholder="••••••••"
+              value={form.password}
               onChange={handleChange}
             />
           </div>

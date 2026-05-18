@@ -1,4 +1,5 @@
 import axios from 'axios'
+import type { AxiosRequestHeaders } from 'axios'
 
 const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
@@ -8,8 +9,10 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token')
-    if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`
+    if (token) {
+        const headers = (config.headers ?? {}) as AxiosRequestHeaders
+        headers.Authorization = `Bearer ${token}`
+        config.headers = headers
     }
     return config
 })
