@@ -21,7 +21,6 @@ export const ensureDefaultAdminAccount = async () => {
             'SELECT id, password_hash FROM users WHERE email = $1 LIMIT 1',
             [DEFAULT_ADMIN_EMAIL]
       );
-
       if (existingUserResult.rows.length === 0) {
             await pool.query(
                   `INSERT INTO users (email, password_hash, full_name, role_id)

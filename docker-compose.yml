@@ -24,7 +24,11 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
+      - PGUSER=jobuser
+      - PGPASSWORD=jobpass
+      - PGHOST=database
+      - PGPORT=5432
+      - PGDATABASE=jobdb
       - NODE_ENV=development
     networks:
       - app-network
