@@ -1,18 +1,15 @@
 from sentence_transformers import SentenceTransformer
 import numpy as np
 
-# Chargé une seule fois au démarrage du service
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def embed_text(text: str) -> list[float]:
     if not text or not text.strip():
-        return [0.0] * 384 # Retourne un vecteur nul pour les textes vides ou composés uniquement d'espaces pour éviter que ça plante
-    
+        return [0.0] * 384
     embedding = model.encode(text, normalize_embeddings=True)
     return embedding.tolist()
 
-def embed_offer(offer: dict) -> list[float]: 
-    # On concatène les champs les plus importants
+def embed_offer(offer: dict) -> list[float]:
     text = f"""
     Poste : {offer.get('title', '')}
     Entreprise : {offer.get('company', '')}
@@ -21,16 +18,21 @@ def embed_offer(offer: dict) -> list[float]:
     Niveau : {offer.get('level', '')}
     Description : {offer.get('description', '')[:400]}
     """.strip()
-    
     return embed_text(text)
 
-def embed_profile(profile: dict) -> list[float]: # l'ofrre parfaite pour un profil
-    skills = ', '.join(profile.get('skills', []))
+def embed_ideal_offer(ideal: dict) -> list[float]:
+    """
+    Transforme l'offre parfaite décrite par l'utilisateur en vecteur.
+    L'utilisateur fournit les champs qu'il juge importants, les autres sont ignorés.
+    Même format qu'une vraie offre pour que la comparaison soit cohérente.
+    """
+    skills = ', '.join(ideal.get('skills', []))
     text = f"""
-    Niveau : {profile.get('level', '')}
-    Contrat recherché : {profile.get('contract_type', '')}
+    Poste : {ideal.get('title', '')}
+    Localisation : {ideal.get('location', '')}
+    Contrat : {ideal.get('contract_type', '')}
+    Niveau : {ideal.get('level', '')}
     Compétences : {skills}
-    Localisation souhaitée : {profile.get('location', '')}
+    Description : {ideal.get('description', '')[:400]}
     """.strip()
-    
     return embed_text(text)
