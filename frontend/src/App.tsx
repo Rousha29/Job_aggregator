@@ -9,6 +9,7 @@ import AdminOffers from './pages/admin/AdminOffers';
 import AdminUsers from './pages/admin/AdminUsers';
 import Comparateur from './pages/Comparateur/Comparateur';
 import AccessibilityWidget from './components/AccessibilityWidget/AccessibilityWidget';
+import AdminRoute from './components/AdminRoute';
 
 function App() {
   const [accessibilityEnabled, setAccessibilityEnabled] = useState<boolean>(() => {
@@ -35,9 +36,9 @@ function App() {
           }
         />
         <Route path="/home" element={<Home />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/offers" element={<AdminOffers />} />
-        <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+        <Route path="/admin/offers" element={<AdminRoute><AdminOffers /></AdminRoute>} />
+        <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
         <Route path="/comparateur" element={<Comparateur />} />
       </Routes>
       <AccessibilityWidget enabled={accessibilityEnabled} />
