@@ -31,7 +31,6 @@ interface Offer {
 
 const PAGE_SIZE = 20;
 
-// Mapping filtre frontend → valeur DB
 const CONTRACT_TYPE_MAP: Record<string, string> = {
   permanent: 'CDI',
   internship: 'stage',
@@ -65,7 +64,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [filtered, setFiltered] = useState<Offer[]>([]);
   const [search, setSearch] = useState('');
-  const [filters, setFilters] = useState<Filters>({ contractTypes: [], remote: [], salaryMin: null });
+  const [filters, setFilters] = useState<Filters>({ contractTypes: [], remote: [], salaryMin: null, skills: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [total, setTotal] = useState(0);
@@ -88,7 +87,6 @@ export default function Home() {
 
     setLoading(true);
 
-    // Mappe les valeurs frontend → valeurs DB
     const mappedContractTypes = filters.contractTypes.map(
       (c) => CONTRACT_TYPE_MAP[c] ?? c
     );
@@ -101,6 +99,7 @@ export default function Home() {
         contractTypes: mappedContractTypes.length > 0 ? mappedContractTypes : undefined,
         remote: filters.remote.length > 0 ? filters.remote : undefined,
         salaryMin: filters.salaryMin ?? undefined,
+        skills: filters.skills.length > 0 ? filters.skills : undefined,
       }
     })
       .then((res) => {
@@ -284,6 +283,17 @@ export default function Home() {
                         </span>
                       )}
                     </div>
+
+                    {offer.skillsList && offer.skillsList.length > 0 && (
+                      <div className={styles.skills}>
+                        {offer.skillsList.slice(0, 4).map((s) => (
+                          <span key={s.name} className={styles.skillTag}>{s.name}</span>
+                        ))}
+                        {offer.skillsList.length > 4 && (
+                          <span className={styles.skillTag}>+{offer.skillsList.length - 4}</span>
+                        )}
+                      </div>
+                    )}
 
                     <button
                       className={styles.cardBtn}

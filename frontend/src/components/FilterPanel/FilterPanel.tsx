@@ -5,6 +5,7 @@ export interface Filters {
   contractTypes: string[];
   remote: string[];
   salaryMin: number | null;
+  skills: string[];
 }
 
 interface FilterPanelProps {
@@ -15,11 +16,10 @@ const CONTRACT_OPTIONS = [
   { value: 'permanent', label: 'CDI' },
   { value: 'internship', label: 'Stage' },
   { value: 'alternance', label: 'Alternance' },
-  // { value: 'freelance', label: 'Freelance' },
 ];
 
 const REMOTE_OPTIONS = [
-  { value: 'remote', label: 'Full remote' },  
+  { value: 'remote', label: 'Full remote' },
   { value: 'hybrid', label: 'Hybride' },
   { value: 'onsite', label: 'Présentiel' },
 ];
@@ -31,14 +31,21 @@ const SALARY_OPTIONS = [
   { value: 60, label: '60k+' },
 ];
 
+const SKILL_OPTIONS = [
+  'React', 'Vue.js', 'Angular', 'TypeScript', 'JavaScript',
+  'Python', 'Java', 'PHP', 'Node.js', 'Docker',
+  'AWS', 'PostgreSQL', 'MongoDB', 'Kubernetes', 'Go',
+];
+
 export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
   const [open, setOpen] = useState(false);
   const [contractTypes, setContractTypes] = useState<string[]>([]);
   const [remote, setRemote] = useState<string[]>([]);
   const [salaryMin, setSalaryMin] = useState<number | null>(null);
+  const [skills, setSkills] = useState<string[]>([]);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const activeCount = contractTypes.length + remote.length + (salaryMin ? 1 : 0);
+  const activeCount = contractTypes.length + remote.length + (salaryMin ? 1 : 0) + skills.length;
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -55,7 +62,7 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
       ? contractTypes.filter((v) => v !== value)
       : [...contractTypes, value];
     setContractTypes(updated);
-    onFiltersChange({ contractTypes: updated, remote, salaryMin });
+    onFiltersChange({ contractTypes: updated, remote, salaryMin, skills });
   };
 
   const toggleRemote = (value: string) => {
@@ -63,20 +70,29 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
       ? remote.filter((v) => v !== value)
       : [...remote, value];
     setRemote(updated);
-    onFiltersChange({ contractTypes, remote: updated, salaryMin });
+    onFiltersChange({ contractTypes, remote: updated, salaryMin, skills });
   };
 
   const selectSalary = (value: number) => {
     const updated = salaryMin === value ? null : value;
     setSalaryMin(updated);
-    onFiltersChange({ contractTypes, remote, salaryMin: updated });
+    onFiltersChange({ contractTypes, remote, salaryMin: updated, skills });
+  };
+
+  const toggleSkill = (value: string) => {
+    const updated = skills.includes(value)
+      ? skills.filter((v) => v !== value)
+      : [...skills, value];
+    setSkills(updated);
+    onFiltersChange({ contractTypes, remote, salaryMin, skills: updated });
   };
 
   const reset = () => {
     setContractTypes([]);
     setRemote([]);
     setSalaryMin(null);
-    onFiltersChange({ contractTypes: [], remote: [], salaryMin: null });
+    setSkills([]);
+    onFiltersChange({ contractTypes: [], remote: [], salaryMin: null, skills: [] });
   };
 
   return (
@@ -157,6 +173,23 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
                   />
                   <span className={styles.optionLabel}>{opt.label}</span>
                 </label>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.divider} />
+
+          <div className={styles.section}>
+            <p className={styles.sectionTitle}>Technologies</p>
+            <div className={styles.skillsGrid}>
+              {SKILL_OPTIONS.map((skill) => (
+                <button
+                  key={skill}
+                  className={`${styles.skillBtn} ${skills.includes(skill) ? styles.skillBtnActive : ''}`}
+                  onClick={() => toggleSkill(skill)}
+                >
+                  {skill}
+                </button>
               ))}
             </div>
           </div>

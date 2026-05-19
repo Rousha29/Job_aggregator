@@ -10,19 +10,14 @@ export const getJobs = async (req, res) => {
     const page = parseInt(req.query.page) || 0;
     const size = parseInt(req.query.size) || 20;
     const q = req.query.q || '';
-
-    // Axios envoie contractTypes[] comme clé
-    const contractTypes = toArray(
-      req.query['contractTypes[]'] || req.query.contractTypes
-    );
-    const remote = toArray(
-      req.query['remote[]'] || req.query.remote
-    );
+    const contractTypes = toArray(req.query['contractTypes[]'] || req.query.contractTypes);
+    const remote = toArray(req.query['remote[]'] || req.query.remote);
     const salaryMin = req.query.salaryMin ? parseInt(req.query.salaryMin) : null;
+    const skills = toArray(req.query['skills[]'] || req.query.skills);
 
-    console.log('Filters received:', { contractTypes, remote, salaryMin });
+    console.log('Filters received:', { contractTypes, remote, salaryMin, skills });
 
-    const data = await fetchJobs(page, size, q, contractTypes, remote, salaryMin);
+    const data = await fetchJobs(page, size, q, contractTypes, remote, salaryMin, skills);
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });

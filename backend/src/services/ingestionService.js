@@ -62,6 +62,7 @@ const mapJob = (job) => {
   );
 
   const remote_policy = normalizeRemotePolicy(job.details?.remotePolicy?.frequency);
+  const skills = job.skillsList?.map(s => s.name).filter(Boolean) ?? [];
 
   return {
     externalId:    job.id ?? job.objectID,
@@ -74,6 +75,7 @@ const mapJob = (job) => {
     contract_type,
     remote:        remote_policy === 'remote',
     remote_policy,
+    skills,
     source_url:    job.seoAlias ? `https://welovedevs.com/app/jobs/${job.seoAlias}` : null,
     source:        'welovedevs',
   };
@@ -101,14 +103,14 @@ export const ingestJobs = async () => {
 
       try {
         await pool.query(
-          `INSERT INTO offers (external_id, title, description, company, location, contract_type, salary_min, salary_max, remote, remote_policy, source_url, source, fetched_at)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,NOW())
+          `INSERT INTO offers (external_id, title, description, company, location, contract_type, salary_min, salary_max, remote, remote_policy, skills, source_url, source, fetched_at)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,NOW())
            ON CONFLICT (external_id) DO UPDATE SET
              title=$2, description=$3, company=$4, location=$5, contract_type=$6,
-             salary_min=$7, salary_max=$8, remote=$9, remote_policy=$10, source_url=$11`,
+             salary_min=$7, salary_max=$8, remote=$9, remote_policy=$10, skills=$11, source_url=$12`,
           [o.externalId, o.title, o.description, o.company, o.location,
            o.contract_type, o.salary_min, o.salary_max, o.remote,
-           o.remote_policy, o.source_url, o.source]
+           o.remote_policy, JSON.stringify(o.skills), o.source_url, o.source]
         );
         totalIngested++;
       } catch (err) {

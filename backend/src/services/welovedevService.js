@@ -1,6 +1,6 @@
 import pool from '../config/db.js';
 
-export const fetchJobs = async (page = 0, size = 20, q = '', contractTypes = [], remote = [], salaryMin = null) => {
+export const fetchJobs = async (page = 0, size = 20, q = '', contractTypes = [], remote = [], salaryMin = null, skills = []) => {
   const offset = page * size;
   let query = `SELECT * FROM offers WHERE 1=1`;
   let countQuery = `SELECT COUNT(*) FROM offers WHERE 1=1`;
@@ -23,7 +23,6 @@ export const fetchJobs = async (page = 0, size = 20, q = '', contractTypes = [],
   }
 
   if (remote.length > 0) {
-    // Mapping frontend → valeurs DB remote_policy
     const remotePolicyMap = {
       'remote': 'remote',
       'hybrid': 'hybrid',
@@ -41,6 +40,18 @@ export const fetchJobs = async (page = 0, size = 20, q = '', contractTypes = [],
     countQuery += ` AND salary_min >= $${paramIndex}`;
     params.push(salaryMin);
     paramIndex++;
+  }
+
+  // Filtre skills : l'offre doit contenir AU MOINS UN des skills sélectionnés
+  if (skills.length > 0) {
+    const skillConditions = skills.map((_, i) => `skills @> $${paramIndex + i}::jsonb`);
+    const orCondition = skillConditions.join(' OR ');
+    query += ` AND (${orCondition})`;
+    countQuery += ` AND (${orCondition})`;
+    skills.forEach(skill => {
+      params.push(JSON.stringify([skill]));
+      paramIndex++;
+    });
   }
 
   query += ` ORDER BY fetched_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
@@ -67,6 +78,7 @@ export const fetchJobs = async (page = 0, size = 20, q = '', contractTypes = [],
         salary: { min: row.salary_min, max: row.salary_max },
         remotePolicy: { frequency: row.remote_policy ?? (row.remote ? 'remote' : 'onsite') }
       },
+      skillsList: Array.isArray(row.skills) ? row.skills.map(s => ({ name: s })) : [],
       descriptionPreview: row.description,
       publishDate: row.fetched_at ? new Date(row.fetched_at).getTime() * 1000 : null,
       seoAlias: row.source_url ? row.source_url.split('/').pop() : null,
