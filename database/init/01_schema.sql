@@ -29,7 +29,6 @@ CREATE TABLE offers (
     CHECK (level IN ('junior', 'mid', 'senior')),
   location VARCHAR(255),
   description TEXT,
-  summary_ai TEXT,
   source_url TEXT,
   is_visible BOOLEAN DEFAULT true,
   fetched_at TIMESTAMP DEFAULT NOW(),
