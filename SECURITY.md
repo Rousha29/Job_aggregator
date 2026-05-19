@@ -255,6 +255,25 @@ CORS_ORIGIN=http://localhost:5173
 
 ---
 
+## Sanitization XSS du contenu WeLoveDevs (SEC-012)
+
+### C'est quoi le problème ?
+Les offres d'emploi récupérées depuis WeLoveDevs peuvent contenir du HTML dans leurs descriptions. Si ce HTML est stocké tel quel puis affiché dans le navigateur, un attaquant qui contrôlerait une offre malveillante pourrait y injecter du code JavaScript — c'est une attaque XSS stockée.
+
+### Ce qui a changé
+- À l'ingestion, chaque offre est nettoyée avant d'être insérée en base
+- Les descriptions conservent uniquement les balises de mise en forme inoffensives (`p`, `br`, `ul`, `ol`, `li`, `strong`, `em`)
+- Les titres, noms d'entreprise et localisations sont convertis en texte brut (toutes les balises supprimées)
+- La sanitization est appliquée dans les deux services d'ingestion : `backend/src/services/ingestionService.js` et `microservices/services/API_welovedevs/welovedev.mapper.js`
+
+### Pourquoi à l'ingestion et pas à l'affichage
+Nettoyer à l'affichage expose à des oublis côté frontend. Nettoyer à l'ingestion garantit que la base de données ne contient jamais de contenu dangereux, quelle que soit la façon dont les données sont ensuite consommées.
+
+### Outil utilisé
+[sanitize-html](https://github.com/apostrophecms/sanitize-html) — bibliothèque Node.js qui supprime ou filtre les balises et attributs HTML selon une liste blanche configurable.
+
+---
+
 ## Protection de la synchronisation WeLoveDevs (SEC-015)
 
 ### C'est quoi le problème ?

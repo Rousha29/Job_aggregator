@@ -1,7 +1,14 @@
 import { fetchJobs } from './welovedevService.js';
 import pool from '../config/db.js';
+import sanitizeHtml from 'sanitize-html';
 
 const delay = (ms) => new Promise(r => setTimeout(r, ms));
+
+const sanitizeText = (str) => sanitizeHtml(str ?? '', { allowedTags: [], allowedAttributes: {} });
+const sanitizeDescription = (str) => sanitizeHtml(str ?? '', {
+  allowedTags: ['p', 'br', 'ul', 'ol', 'li', 'strong', 'em', 'b', 'i'],
+  allowedAttributes: {},
+});
 
 const mapContractType = (type) => {
   const map = {
@@ -16,10 +23,10 @@ const mapContractType = (type) => {
 
 const normalizeOffer = (raw) => ({
   external_id:   raw.id,
-  title:         raw.title ?? 'Sans titre',
-  description:   raw.descriptionPreview ?? '',
-  company:       raw.smallCompany?.companyName ?? raw.companyId ?? 'Inconnu',
-  location:      raw.formattedPlaces?.[0] ?? 'Non précisé',
+  title:         sanitizeText(raw.title ?? 'Sans titre'),
+  description:   sanitizeDescription(raw.descriptionPreview),
+  company:       sanitizeText(raw.smallCompany?.companyName ?? raw.companyId ?? 'Inconnu'),
+  location:      sanitizeText(raw.formattedPlaces?.[0] ?? 'Non précisé'),
   contract_type: raw.contractTypes?.[0] ? mapContractType(raw.contractTypes[0]) : null,
   salary_min:    raw.details?.salary?.min ?? null,
   salary_max:    raw.details?.salary?.max ?? null,
