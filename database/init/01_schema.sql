@@ -26,7 +26,7 @@ CREATE TABLE offers (
   remote BOOLEAN DEFAULT false,
   duration_months INTEGER,
   level VARCHAR(50)
-    CHECK (level IN ('junior', 'mid', 'senior')),
+    CHECK (level IN ('débutant', 'confirmé', 'senior', 'non précisé')),
   location VARCHAR(255),
   description TEXT,
   source_url TEXT,

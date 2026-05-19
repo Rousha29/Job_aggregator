@@ -46,7 +46,7 @@ const normalizeContractType = (contracts) => {
 
 const normalizeLevel = (experience) => {
   if (!experience) return null;
-  if (experience <= 2) return 'junior';
-  if (experience <= 5) return 'mid';
+  if (experience <= 2) return 'débutant';
+  if (experience <= 5) return 'confirmé';
   return 'senior';
 };

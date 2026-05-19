@@ -9,6 +9,7 @@ import offersRoutes from './routes/offers.routes.js';
 import favoritesRoutes from './routes/favorites.routes.js';
 import { authMiddleware } from './middlewares/auth.middleware.js';
 import adminRoutes from './routes/admin.routes.js';
+import aiRoutes from './routes/ai.routes.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
 
 const app = express();
@@ -28,6 +29,7 @@ app.use('/api/offers', offersRoutes);
 app.use('/api/favorites', favoritesRoutes);
 app.use('/api/offers/import', authMiddleware, importRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.use((req, res, next) => {
   const error = new Error(`Route introuvable : ${req.method} ${req.url}`);
