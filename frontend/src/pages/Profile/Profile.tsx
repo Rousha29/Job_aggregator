@@ -44,7 +44,12 @@ const formatContract = (contract: string) => {
       return map[contract] ?? contract;
 };
 
-export default function Profile() {
+interface ProfileProps {
+      accessibilityEnabled: boolean;
+      setAccessibilityEnabled: (enabled: boolean) => void;
+}
+
+export default function Profile({ accessibilityEnabled, setAccessibilityEnabled }: ProfileProps) {
       const [activeView, setActiveView] = useState<'view' | 'edit' | 'favorites'>('view');
       const [isSettingsOpen, setIsSettingsOpen] = useState(false);
       const [user, setUser] = useState<User | null>(null);
@@ -204,8 +209,13 @@ export default function Profile() {
                                                 <input type="checkbox" defaultChecked />
                                           </div>
                                           <div className={styles.settingItem}>
-                                                <label>Accessibilité</label>
-                                                <button className={styles.actionButton}>Gérer</button>
+                                                <label htmlFor="accessibility-toggle">Accessibilité</label>
+                                                <input
+                                                      id="accessibility-toggle"
+                                                      type="checkbox"
+                                                      checked={accessibilityEnabled}
+                                                      onChange={(e) => setAccessibilityEnabled(e.target.checked)}
+                                                />
                                           </div>
                                           <div className={styles.settingItem}>
                                                 <label>Confidentialité</label>
