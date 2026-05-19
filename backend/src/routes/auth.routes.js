@@ -2,7 +2,7 @@ import ratelimit from 'express-rate-limit';
 import { validate } from '../middlewares/validate.js';
 import { registerSchema, loginSchema } from '../schemas/auth.js';
 import express from 'express';
-import { register, login } from '../controllers/auth.controller.js';
+import { register, login, verifyEmail } from '../controllers/auth.controller.js';
 
 const router = express.Router();
 
@@ -12,7 +12,8 @@ const limiter = ratelimit({
   message: { error: 'Trop de tentatives de connexion, veuillez réessayer plus tard.' }
 });
 
-router.post('/register',validate(registerSchema), register);
+router.post('/register', validate(registerSchema), register);
 router.post('/login', limiter, validate(loginSchema), login);
+router.get('/verify', verifyEmail);
 
 export default router;
