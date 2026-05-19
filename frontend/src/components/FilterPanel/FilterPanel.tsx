@@ -15,11 +15,11 @@ const CONTRACT_OPTIONS = [
   { value: 'permanent', label: 'CDI' },
   { value: 'internship', label: 'Stage' },
   { value: 'alternance', label: 'Alternance' },
-  { value: 'freelance', label: 'Freelance' },
+  // { value: 'freelance', label: 'Freelance' },
 ];
 
 const REMOTE_OPTIONS = [
-  { value: 'remote', label: 'Full remote' },
+  { value: 'remote', label: 'Full remote' },  
   { value: 'hybrid', label: 'Hybride' },
   { value: 'onsite', label: 'Présentiel' },
 ];

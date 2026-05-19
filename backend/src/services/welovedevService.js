@@ -23,10 +23,16 @@ export const fetchJobs = async (page = 0, size = 20, q = '', contractTypes = [],
   }
 
   if (remote.length > 0) {
-    const remoteValues = remote.map(r => r === 'remote');
-    query += ` AND remote = ANY($${paramIndex})`;
-    countQuery += ` AND remote = ANY($${paramIndex})`;
-    params.push(remoteValues);
+    // Mapping frontend → valeurs DB remote_policy
+    const remotePolicyMap = {
+      'remote': 'remote',
+      'hybrid': 'hybrid',
+      'onsite': 'onsite',
+    };
+    const remotePolicyValues = remote.map(r => remotePolicyMap[r] ?? r);
+    query += ` AND remote_policy = ANY($${paramIndex}::text[])`;
+    countQuery += ` AND remote_policy = ANY($${paramIndex}::text[])`;
+    params.push(remotePolicyValues);
     paramIndex++;
   }
 
@@ -59,7 +65,7 @@ export const fetchJobs = async (page = 0, size = 20, q = '', contractTypes = [],
       contractTypes: [mapContractBack(row.contract_type)],
       details: {
         salary: { min: row.salary_min, max: row.salary_max },
-        remotePolicy: { frequency: row.remote ? 'remote' : 'onsite' }
+        remotePolicy: { frequency: row.remote_policy ?? (row.remote ? 'remote' : 'onsite') }
       },
       descriptionPreview: row.description,
       publishDate: row.fetched_at ? new Date(row.fetched_at).getTime() * 1000 : null,
