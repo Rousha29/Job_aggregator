@@ -1,6 +1,7 @@
 import { hashPassword, verifyPassword } from './password.js';
 import jwt from 'jsonwebtoken';
 import pool from '../config/db.js';
+import crypto from 'crypto';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) throw new Error('JWT_SECRET est manquant dans les variables d\'environnement');
@@ -51,8 +52,36 @@ export const registerUser = async ({ email, password, full_name }) => {
 
   } catch (error) {
     console.error('authService error:', error);
-    throw error; // ← throw directement sans re-wrapper
+    throw error;
   }
+};
+
+export const createVerificationToken = async (userId) => {
+  const token = crypto.randomBytes(32).toString('hex');
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+  await pool.query(
+    'INSERT INTO email_verification_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
+    [userId, token, expiresAt]
+  );
+
+  return token;
+};
+
+export const verifyEmailToken = async (token) => {
+  const result = await pool.query(
+    'SELECT * FROM email_verification_tokens WHERE token = $1',
+    [token]
+  );
+
+  const row = result.rows[0];
+
+  if (!row) throw new Error('Token invalide');
+  if (row.used) throw new Error('Token déjà utilisé');
+  if (new Date() > new Date(row.expires_at)) throw new Error('Token expiré');
+
+  await pool.query('UPDATE email_verification_tokens SET used = true WHERE id = $1', [row.id]);
+  await pool.query('UPDATE users SET email_verified = true WHERE id = $1', [row.user_id]);
 };
 
 //  LOGIN
@@ -61,7 +90,7 @@ export const loginUser = async ({ email, password }) => {
     const normalizedEmail = email?.trim().toLowerCase();
 
     const result = await pool.query(
-      `SELECT u.id, u.email, u.password_hash, r.name as role
+      `SELECT u.id, u.email, u.password_hash, u.email_verified, r.name as role
        FROM users u
        JOIN roles r ON u.role_id = r.id
        WHERE u.email = $1`,
@@ -71,7 +100,12 @@ export const loginUser = async ({ email, password }) => {
     const user = result.rows[0];
     if (!user) throw new Error('User not found');
 
-    const valid = await verifyPassword(password, user.password_hash); 
+    // Un compte dont l'email n'est pas vérifié pourrait appartenir à quelqu'un
+    // qui a usurpé l'adresse d'un tiers à l'inscription. On bloque la connexion
+    // tant que la propriété de l'adresse n'est pas confirmée.
+    if (!user.email_verified) throw new Error('Email non vérifié');
+
+    const valid = await verifyPassword(password, user.password_hash);
     if (!valid) throw new Error('Invalid password');
 
     const token = jwt.sign(

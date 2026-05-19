@@ -20,6 +20,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      mailhog:
+        condition: service_started
     env_file:
       - .env
     environment:
@@ -69,6 +71,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - app-network
 
   database:
     image: postgres:15
