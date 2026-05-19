@@ -60,6 +60,9 @@ const formatRemote = (remote: string) => {
   return map[remote] ?? remote;
 };
 
+const stripHtml = (html: string) =>
+  html.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').trim();
+
 export default function Home() {
   const navigate = useNavigate();
   const [filtered, setFiltered] = useState<Offer[]>([]);
@@ -252,8 +255,8 @@ export default function Home() {
 
                     {offer.descriptionPreview && (
                       <p className={styles.description}>
-                        {offer.descriptionPreview.slice(0, 500)}
-                        {offer.descriptionPreview.length > 500 ? '...' : ''}
+                        {stripHtml(offer.descriptionPreview).slice(0, 200)}
+                        {stripHtml(offer.descriptionPreview).length > 200 ? '...' : ''}
                       </p>
                     )}
 
@@ -284,7 +287,7 @@ export default function Home() {
                       )}
                     </div>
 
-                    {offer.skillsList && offer.skillsList.length > 0 && (
+                    {/* {offer.skillsList && offer.skillsList.length > 0 && (
                       <div className={styles.skills}>
                         {offer.skillsList.slice(0, 4).map((s) => (
                           <span key={s.name} className={styles.skillTag}>{s.name}</span>
@@ -293,7 +296,7 @@ export default function Home() {
                           <span className={styles.skillTag}>+{offer.skillsList.length - 4}</span>
                         )}
                       </div>
-                    )}
+                    )} */}
 
                     <button
                       className={styles.cardBtn}
