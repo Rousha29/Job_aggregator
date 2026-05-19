@@ -12,6 +12,7 @@ const createMailhogTransport = () =>
   });
 
 export const sendVerificationEmail = async (email, token) => {
+  if (process.env.NODE_ENV === 'test') return;
   const verifyUrl = `${process.env.APP_URL || 'http://localhost:5173'}/verify-email?token=${token}`;
 
   const subject = 'Vérifiez votre adresse email – Job Aggregator';

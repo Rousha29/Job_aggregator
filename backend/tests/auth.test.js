@@ -145,8 +145,7 @@ describe('Auth API', () => {
         });
 
       expect(res.statusCode).toBe(201);
-      expect(res.body.message).toBe('User created');
-      expect(res.body.user.email).toBe('test@example.com');
+      expect(res.body.message).toBe('Compte créé. Vérifiez votre email pour activer votre compte.');
     });
   });
 
@@ -156,7 +155,9 @@ describe('Auth API', () => {
         rows: [{
           id: 'user-uuid',
           email: 'test@example.com',
-          password_hash: 'hashed_password'
+          password_hash: 'hashed_password',
+          email_verified: true,
+          role: 'user'
         }]
       });
       bcrypt.compare.mockResolvedValue(true);
