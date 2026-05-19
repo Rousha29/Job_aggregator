@@ -43,16 +43,18 @@ export const fetchJobs = async (page = 0, size = 20, q = '', contractTypes = [],
   }
 
   // Filtre skills : l'offre doit contenir AU MOINS UN des skills sélectionnés
-  if (skills.length > 0) {
-    const skillConditions = skills.map((_, i) => `skills @> $${paramIndex + i}::jsonb`);
-    const orCondition = skillConditions.join(' OR ');
-    query += ` AND (${orCondition})`;
-    countQuery += ` AND (${orCondition})`;
-    skills.forEach(skill => {
-      params.push(JSON.stringify([skill]));
-      paramIndex++;
-    });
-  }
+if (skills.length > 0) {
+  const skillConditions = skills.map((_, i) => 
+    `skills::text ILIKE $${paramIndex + i}`
+  );
+  const orCondition = skillConditions.join(' OR ');
+  query += ` AND (${orCondition})`;
+  countQuery += ` AND (${orCondition})`;
+  skills.forEach(skill => {
+    params.push(`%"${skill}"%`);
+    paramIndex++;
+  });
+}
 
   query += ` ORDER BY fetched_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
   const queryParams = [...params, size, offset];
