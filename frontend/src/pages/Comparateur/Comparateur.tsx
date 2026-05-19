@@ -13,6 +13,8 @@ interface IdealOffer {
     level: string;
     skills: string[];
     description: string;
+    salary_min: string;
+    salary_max: string;
 }
 
 interface OfferResult {
@@ -69,6 +71,8 @@ export default function Comparateur() {
         level: '',
         skills: [],
         description: '',
+        salary_min: '',
+        salary_max: '',
     });
     const [skillInput, setSkillInput] = useState('');
     const [result, setResult] = useState<CompareResult | null>(null);
@@ -77,6 +81,8 @@ export default function Comparateur() {
     const [idealOpen, setIdealOpen] = useState(false);
     const [favorites, setFavorites] = useState<FavoriteOffer[]>([]);
     const [loadingFavs, setLoadingFavs] = useState(true);
+    const [pickerOpen, setPickerOpen] = useState(false);
+    const [pickerTarget, setPickerTarget] = useState<'offer1' | 'offer2' | null>(null);
 
     useEffect(() => {
         api.get('/favorites')
@@ -128,6 +134,24 @@ export default function Comparateur() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const openPicker = (target: 'offer1' | 'offer2') => {
+        setPickerTarget(target);
+        setPickerOpen(true);
+    };
+
+    const selectFavorite = (id: string) => {
+        if (pickerTarget === 'offer1') setOfferId1(id);
+        if (pickerTarget === 'offer2') setOfferId2(id);
+        setPickerOpen(false);
+        setPickerTarget(null);
+    };
+
+    const getFavoriteLabel = (id: string) => {
+        const fav = favorites.find(f => f.id === id);
+        if (!fav) return 'Sélectionner une offre';
+        return `${fav.title} — ${fav.company}`;
     };
 
     // Render
@@ -231,6 +255,26 @@ export default function Comparateur() {
                                     </div>
                                 </div>
 
+                                <div className={styles.formGroup}>
+                                    <label className={styles.formLabel}>Salaire min (k€)</label>
+                                    <input
+                                        className={styles.formInput}
+                                        placeholder="ex: 35"
+                                        value={ideal.salary_min}
+                                        onChange={e => setIdeal(p => ({ ...p, salary_min: e.target.value }))}
+                                    />
+                                </div>
+
+                                <div className={styles.formGroup}>
+                                    <label className={styles.formLabel}>Salaire max (k€)</label>
+                                    <input
+                                        className={styles.formInput}
+                                        placeholder="ex: 50"
+                                        value={ideal.salary_max}
+                                        onChange={e => setIdeal(p => ({ ...p, salary_max: e.target.value }))}
+                                    />
+                                </div>
+
                                 <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
                                     <label className={styles.formLabel}>Compétences</label>
                                     <div className={styles.skillsWrap}>
@@ -264,36 +308,26 @@ export default function Comparateur() {
                     <div className={styles.slot}>
                         <span className={styles.slotNumber}>1.</span>
                         <label className={styles.slotLabel}>Offre favorite</label>
-                        <select
-                            className={styles.slotInput}
-                            value={offerId1}
-                            onChange={e => setOfferId1(e.target.value)}
+                        <button
+                            type="button"
+                            className={styles.slotPicker}
+                            onClick={() => openPicker('offer1')}
                             disabled={loadingFavs}
                         >
-                            <option value="">{loadingFavs ? 'Chargement…' : 'Sélectionner une offre'}</option>
-                            {favorites.map(f => (
-                                <option key={f.id} value={f.id}>
-                                    {f.title} — {f.company}
-                                </option>
-                            ))}
-                        </select>
+                            {loadingFavs ? 'Chargement…' : getFavoriteLabel(offerId1)}
+                        </button>
                     </div>
                     <div className={styles.slot}>
                         <span className={styles.slotNumber}>2.</span>
                         <label className={styles.slotLabel}>Offre favorite</label>
-                        <select
-                            className={styles.slotInput}
-                            value={offerId2}
-                            onChange={e => setOfferId2(e.target.value)}
+                        <button
+                            type="button"
+                            className={styles.slotPicker}
+                            onClick={() => openPicker('offer2')}
                             disabled={loadingFavs}
                         >
-                            <option value="">{loadingFavs ? 'Chargement…' : 'Sélectionner une offre'}</option>
-                            {favorites.map(f => (
-                                <option key={f.id} value={f.id}>
-                                    {f.title} — {f.company}
-                                </option>
-                            ))}
-                        </select>
+                            {loadingFavs ? 'Chargement…' : getFavoriteLabel(offerId2)}
+                        </button>
                     </div>
                 </div>
 
@@ -311,6 +345,33 @@ export default function Comparateur() {
 
                 {/* ── Résultat ── */}
                 {result && <CompareResultView result={result} />}
+
+                {pickerOpen && (
+                    <div className={styles.pickerOverlay} onClick={() => setPickerOpen(false)}>
+                        <div className={styles.pickerModal} onClick={(e) => e.stopPropagation()}>
+                            <div className={styles.pickerHeader}>
+                                <h3 className={styles.pickerTitle}>Choisir une offre favorite</h3>
+                                <button className={styles.pickerClose} onClick={() => setPickerOpen(false)} aria-label="Fermer">✕</button>
+                            </div>
+                            <div className={styles.pickerList}>
+                                {favorites.length === 0 ? (
+                                    <p className={styles.emptyPicker}>Aucun favori trouvé.</p>
+                                ) : (
+                                    favorites.map(f => (
+                                        <button
+                                            key={f.id}
+                                            className={styles.pickerItem}
+                                            onClick={() => selectFavorite(f.id)}
+                                        >
+                                            <div className={styles.pickerItemTitle}>{f.title}</div>
+                                            <div className={styles.pickerItemMeta}> {f.company} · {f.contract_type || 'Non indiqué'} · {f.location || 'Non indiqué'}</div>
+                                        </button>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
             </main>
         </div>
