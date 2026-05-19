@@ -307,3 +307,22 @@ La synchronisation WeLoveDevs consomme un quota d'API partagé entre tous les é
 
 ### Pourquoi un cooldown de 10 minutes
 Une sync complète peut prendre plusieurs minutes (1,1s de délai par offre, selon la doc API). 10 minutes laisse suffisamment de marge pour qu'une sync se termine avant d'en autoriser une nouvelle, sans bloquer les besoins légitimes de l'admin.
+
+---
+
+## Tests de sécurité en CI (SEC-019)
+
+### C'est quoi le problème ?
+Sans tests automatiques, une modification du code peut silencieusement casser une protection de sécurité sans que personne ne le remarque avant la mise en production.
+
+### Ce qui a changé
+- Un fichier `backend/tests/security.test.js` regroupe les tests de régression sécurité
+- Ces tests tournent automatiquement sur chaque PR via la CI GitHub Actions existante
+- Chaque mesure de sécurité a au moins un test qui vérifie qu'elle est toujours active
+
+### Ce qui est testé
+- **SEC-002** : les champs inconnus (ex: `role: "admin"`) sont ignorés ; les mots de passe trop courts et les emails invalides sont rejetés
+- **SEC-007** : la connexion est bloquée si l'email n'est pas vérifié (`403`)
+- **SEC-008** : les routes protégées retournent `401` sans token
+- **SEC-013** : les filtres hors bornes retournent `400`
+- **SEC-015** : la sync WeLoveDevs est réservée aux admins
