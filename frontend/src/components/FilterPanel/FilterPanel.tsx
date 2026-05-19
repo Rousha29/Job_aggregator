@@ -37,6 +37,47 @@ const SKILL_OPTIONS = [
   'AWS', 'PostgreSQL', 'MongoDB', 'Kubernetes', 'Go',
 ];
 
+function AccordionSection({
+  title,
+  count,
+  children,
+  defaultOpen = true,
+}: {
+  title: string;
+  count?: number;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div className={styles.accordion}>
+      <button
+        className={styles.accordionHeader}
+        onClick={() => setOpen(!open)}
+        type="button"
+      >
+        <span className={styles.accordionTitle}>
+          {title}
+          {count ? <span className={styles.accordionBadge}>{count}</span> : null}
+        </span>
+        <svg
+          className={`${styles.accordionIcon} ${open ? styles.accordionIconOpen : ''}`}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          width="14"
+          height="14"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {open && <div className={styles.accordionContent}>{children}</div>}
+    </div>
+  );
+}
+
 export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
   const [open, setOpen] = useState(false);
   const [contractTypes, setContractTypes] = useState<string[]>([]);
@@ -121,8 +162,10 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
             )}
           </div>
 
-          <div className={styles.section}>
-            <p className={styles.sectionTitle}>Type de contrat</p>
+          <AccordionSection
+            title="Type de contrat"
+            count={contractTypes.length || undefined}
+          >
             <div className={styles.options}>
               {CONTRACT_OPTIONS.map((opt) => (
                 <label key={opt.value} className={styles.option}>
@@ -136,12 +179,14 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
                 </label>
               ))}
             </div>
-          </div>
+          </AccordionSection>
 
           <div className={styles.divider} />
 
-          <div className={styles.section}>
-            <p className={styles.sectionTitle}>Télétravail</p>
+          <AccordionSection
+            title="Télétravail"
+            count={remote.length || undefined}
+          >
             <div className={styles.options}>
               {REMOTE_OPTIONS.map((opt) => (
                 <label key={opt.value} className={styles.option}>
@@ -155,12 +200,14 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
                 </label>
               ))}
             </div>
-          </div>
+          </AccordionSection>
 
           <div className={styles.divider} />
 
-          <div className={styles.section}>
-            <p className={styles.sectionTitle}>Salaire minimum</p>
+          <AccordionSection
+            title="Salaire minimum"
+            count={salaryMin ? 1 : undefined}
+          >
             <div className={styles.options}>
               {SALARY_OPTIONS.map((opt) => (
                 <label key={opt.value} className={styles.option}>
@@ -175,24 +222,29 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
                 </label>
               ))}
             </div>
-          </div>
+          </AccordionSection>
 
           <div className={styles.divider} />
 
-          <div className={styles.section}>
-            <p className={styles.sectionTitle}>Technologies</p>
-            <div className={styles.skillsGrid}>
+          <AccordionSection
+            title="Technologies"
+            count={skills.length || undefined}
+            defaultOpen={false}
+          >
+            <div className={styles.options}>
               {SKILL_OPTIONS.map((skill) => (
-                <button
-                  key={skill}
-                  className={`${styles.skillBtn} ${skills.includes(skill) ? styles.skillBtnActive : ''}`}
-                  onClick={() => toggleSkill(skill)}
-                >
-                  {skill}
-                </button>
+                <label key={skill} className={styles.option}>
+                  <input
+                    type="checkbox"
+                    checked={skills.includes(skill)}
+                    onChange={() => toggleSkill(skill)}
+                    className={styles.checkbox}
+                  />
+                  <span className={styles.optionLabel}>{skill}</span>
+                </label>
               ))}
             </div>
-          </div>
+          </AccordionSection>
         </div>
       )}
     </div>
