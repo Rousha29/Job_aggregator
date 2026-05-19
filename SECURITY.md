@@ -252,3 +252,19 @@ Par défaut, n'importe quel site web pourrait faire des requêtes à notre API d
 ```env
 CORS_ORIGIN=http://localhost:5173
 ```
+
+---
+
+## Protection de la synchronisation WeLoveDevs (SEC-015)
+
+### C'est quoi le problème ?
+La synchronisation WeLoveDevs consomme un quota d'API partagé entre tous les étudiants du partenariat (1 requête par seconde maximum). Sans protection, un admin pourrait déclencher plusieurs syncs simultanément ou en rafale et épuiser le quota, bloquant l'accès à l'API pour toute l'équipe.
+
+### Ce qui a changé
+- La route `POST /api/offers/import` est maintenant réservée aux administrateurs (`requireAdmin`) — un utilisateur connecté standard ne peut plus déclencher une sync
+- Le service microservices refuse toute nouvelle sync si une est déjà en cours (`syncRunning`) — réponse `429`
+- Un cooldown de **10 minutes** est imposé entre deux syncs manuelles — réponse `429` avec le temps restant
+- Le cron interne conserve son propre verrou indépendant pour les syncs automatiques
+
+### Pourquoi un cooldown de 10 minutes
+Une sync complète peut prendre plusieurs minutes (1,1s de délai par offre, selon la doc API). 10 minutes laisse suffisamment de marge pour qu'une sync se termine avant d'en autoriser une nouvelle, sans bloquer les besoins légitimes de l'admin.
