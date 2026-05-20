@@ -59,19 +59,13 @@ if (skills.length > 0) {
   query += ` ORDER BY fetched_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
   const queryParams = [...params, size, offset];
 
-  console.log('SQL Query:', query);
-  console.log('SQL Params:', queryParams);
-  console.log('Count Query:', countQuery);
-  console.log('Count Params:', params);
-
   try {
     const [res, countRes] = await Promise.all([
       pool.query(query, queryParams),
       pool.query(countQuery, params)
     ]);
 
-    const totalCount = parseInt(countRes.rows[0].count);
-    console.log(`Found ${res.rows.length} rows, total count: ${totalCount}`);
+    const totalCount = parseInt(countRes.rows[0]?.count || 0);
 
     const values = res.rows.map(row => ({
       id: row.id,
