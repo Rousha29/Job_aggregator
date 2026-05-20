@@ -174,14 +174,14 @@ export default function Comparateur() {
 
             <main className={styles.main}>
 
-                {/* ── Hero ── */}
+                
                 <section className={styles.hero}>
                     <h1 className={styles.heroTitle}>
                         Notre IA compare <em>vos offres</em> favorites
                     </h1>
                 </section>
 
-                {/* ── Offre idéale ── */}
+                
                 <div className={styles.idealSection}>
                     <button
                         className={styles.idealToggle}
@@ -303,7 +303,7 @@ export default function Comparateur() {
                     )}
                 </div>
 
-                {/* ── Sélection des favoris ── */}
+                
                 <div className={styles.slots}>
                     <div className={styles.slot}>
                         <span className={styles.slotNumber}>1.</span>
@@ -335,7 +335,7 @@ export default function Comparateur() {
                     <p className={styles.errorMsg}>Vous n'avez pas encore de favoris.</p>
                 )}
 
-                {/* ── Bouton comparer ── */}
+            
                 {error && <p className={styles.errorMsg}>{error}</p>}
                 <div className={styles.compareRow}>
                     <button className={styles.compareBtn} onClick={handleCompare} disabled={loading}>
@@ -343,7 +343,6 @@ export default function Comparateur() {
                     </button>
                 </div>
 
-                {/* ── Résultat ── */}
                 {result && <CompareResultView result={result} />}
 
                 {pickerOpen && (
@@ -378,7 +377,7 @@ export default function Comparateur() {
     );
 }
 
-// ── Composant résultat ────────────────────────────────────────────────────────
+// Composant résultat
 
 function CompareResultView({ result }: { result: CompareResult }) {
     const { winner, offer1, offer2, offer1_data, offer2_data, ideal_offer } = result;
@@ -394,7 +393,6 @@ function CompareResultView({ result }: { result: CompareResult }) {
     return (
         <div className={styles.resultWrap}>
 
-            {/* Banner winner */}
             <div className={styles.winnerBanner}>
                 <span className={styles.winnerLabel}>Meilleure correspondance</span>
                 <span className={styles.winnerTitle}>
@@ -405,7 +403,6 @@ function CompareResultView({ result }: { result: CompareResult }) {
                 </span>
             </div>
 
-            {/* Tableau */}
             <div className={styles.tableWrap}>
                 <table className={styles.table}>
                     <thead>
@@ -425,7 +422,6 @@ function CompareResultView({ result }: { result: CompareResult }) {
                     </thead>
                     <tbody>
 
-                        {/* Score */}
                         <tr className={styles.tr}>
                             <td className={styles.tdLabel}>Score de correspondance</td>
                             <td className={styles.tdValue}>
@@ -436,7 +432,6 @@ function CompareResultView({ result }: { result: CompareResult }) {
                             </td>
                         </tr>
 
-                        {/* Infos brutes */}
                         <tr className={styles.tr}>
                             <td className={styles.tdLabel}>Localisation</td>
                             <td className={styles.tdValue}><span className={styles.dataVal}>{offer1_data.location || 'Non indiqué'}</span></td>
@@ -475,7 +470,6 @@ function CompareResultView({ result }: { result: CompareResult }) {
                             </td>
                         </tr>
 
-                        {/* Points forts */}
                         <tr className={styles.tr}>
                             <td className={styles.tdLabel}>Points forts</td>
                             <td className={styles.tdValue}>
@@ -492,7 +486,6 @@ function CompareResultView({ result }: { result: CompareResult }) {
                             </td>
                         </tr>
 
-                        {/* Points faibles */}
                         <tr className={styles.tr}>
                             <td className={styles.tdLabel}>Points faibles</td>
                             <td className={styles.tdValue}>
@@ -516,7 +509,7 @@ function CompareResultView({ result }: { result: CompareResult }) {
     );
 }
 
-// ── Barre de score ────────────────────────────────────────────────────────────
+// Barre de score
 
 function ScoreBar({ score, isWinner }: { score: number; isWinner: boolean }) {
     return (
