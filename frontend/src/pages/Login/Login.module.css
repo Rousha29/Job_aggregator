@@ -7,18 +7,6 @@
   justify-content: center;
   background-color: #f5f4f0;
   font-family: 'DM Sans', sans-serif;
-  position: relative;
-}
-
-.a11yBtn {
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-  width: 44px;
-  height: 44px;
-  border: 1px solid #ddd;
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 .card {

@@ -8,3 +8,4 @@ __pycache__/
 dist/
 compte_rendu
 gitleaks*.tar.gz
+package-lock.json
