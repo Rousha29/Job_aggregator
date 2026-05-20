@@ -145,7 +145,7 @@ describe('Auth API', () => {
         });
 
       expect(res.statusCode).toBe(201);
-      expect(res.body.message).toBe('Compte créé. Vérifiez votre email pour activer votre compte.');
+      expect(res.body.message).toBe('Compte créé.');
     });
   });
 
@@ -156,7 +156,6 @@ describe('Auth API', () => {
           id: 'user-uuid',
           email: 'test@example.com',
           password_hash: 'hashed_password',
-          email_verified: true,
           role: 'user'
         }]
       });

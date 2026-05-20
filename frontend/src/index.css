@@ -85,13 +85,7 @@ body {
   font-size: 1rem;
 }
 
-/*
- * Override a11y : ne s'active QUE si l'utilisateur a explicitement
- * choisi une police via le widget d'accessibilité.
- * Le sélecteur d'attribut sur <html> évite d'écraser les polices
- * des CSS Modules tant que le widget n'est pas actif.
- */
-html[data-a11y-font="on"] body *:not(.trigger):not(.panel) {
+body *:not([data-a11y-ignore]) {
   font-family: var(--a11y-font-family, inherit) !important;
 }
 

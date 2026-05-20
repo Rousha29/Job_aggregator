@@ -70,34 +70,6 @@ describe('Security', () => {
     });
   });
 
-  // SEC-007 — Vérification email
-  describe('SEC-007 — Vérification email', () => {
-    it('bloque la connexion si l\'email n\'est pas vérifié (403)', async () => {
-      pool.query.mockResolvedValueOnce({
-        rows: [{ id: 'u', email: 'u@t.com', password_hash: 'h', email_verified: false, role: 'user' }]
-      });
-      bcrypt.compare.mockResolvedValue(true);
-
-      const res = await request(app)
-        .post('/api/auth/login')
-        .send({ email: 'u@t.com', password: 'securepass' });
-      expect(res.statusCode).toBe(403);
-    });
-
-    it('autorise la connexion si l\'email est vérifié (200)', async () => {
-      pool.query.mockResolvedValueOnce({
-        rows: [{ id: 'u', email: 'u@t.com', password_hash: 'h', email_verified: true, role: 'user' }]
-      });
-      bcrypt.compare.mockResolvedValue(true);
-      jwt.sign.mockReturnValue('fake_token');
-
-      const res = await request(app)
-        .post('/api/auth/login')
-        .send({ email: 'u@t.com', password: 'securepass' });
-      expect(res.statusCode).toBe(200);
-    });
-  });
-
   // SEC-008 — Auth requise sur les routes protégées
   describe('SEC-008 — Authentification requise', () => {
     it('retourne 401 sur /api/users/me sans token', async () => {

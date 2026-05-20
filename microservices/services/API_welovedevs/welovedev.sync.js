@@ -2,6 +2,21 @@ import { fetchJobs } from "./welovedevService.js";
 import { mapJob } from "./welovedev.mapper.js";
 import pool from "../../config/db.js";
 
+const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://ai-service:8000';
+
+const triggerIndexingForOffer = (offerId) => {
+      if (!offerId) return;
+      fetch(`${AI_SERVICE_URL}/index/offer`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ offer_id: offerId })
+      })
+            .then((r) => {
+                  if (!r.ok) console.error('Indexation failed:', r.status);
+            })
+            .catch((err) => console.error('Indexation error:', err));
+};
+
 export async function syncWeLoveDevs() {
       try {
             let page = 0;
@@ -34,22 +49,26 @@ export async function syncWeLoveDevs() {
                         }
 
                         try {
-                              await pool.query(
+                              const insertResult = await pool.query(
                                     `INSERT INTO offers (
                   external_id, source, title, description, company, location,
-                  contract_type, salary_min, salary_max, remote,
+                  contract_type, salary_min, salary_max, remote, remote_policy, skills,
                   level, source_url, fetched_at
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW())
                 ON CONFLICT (external_id, source) DO UPDATE SET
                   title=$3, description=$4, company=$5, location=$6,
                   contract_type=$7, salary_min=$8, salary_max=$9,
-                  remote=$10, level=$11, source_url=$12, fetched_at=NOW()`,
+                  remote=$10, remote_policy=$11, skills=$12, level=$13, source_url=$14, fetched_at=NOW()
+                RETURNING id`,
                                     [
                                           job.externalId, 'welovedevs', job.title, job.description, job.company,
                                           job.location, job.contract_type, job.salary_min, job.salary_max,
-                                          job.remote, job.level, job.source_url
+                                          job.remote, job.remote_policy, JSON.stringify(job.skills),
+                                          job.level, job.source_url
                                     ]
                               );
+                              const insertedId = insertResult?.rows?.[0]?.id;
+                              triggerIndexingForOffer(insertedId);
                               pageSynced++;
                         } catch (err) {
                               console.error(`Erreur insertion WeLoveDevs ${job.externalId}:`, err.message);

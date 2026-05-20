@@ -34,36 +34,6 @@ Vérifier l'installation avec `gitleaks version`
 
 ---
 
-## Vérification email à l'inscription (SEC-007)
-
-### C'est quoi le problème ?
-Sans vérification, quelqu'un peut créer un compte avec l'adresse email de quelqu'un d'autre. Il peut usurper une identité dès l'inscription.
-
-### Ce qui a changé
-- À l'inscription, un email est envoyé avec un lien de vérification valable 24h
-- Le lien contient un token secret généré aléatoirement (64 caractères)
-- Le token est stocké en base avec une date d'expiration et un statut "utilisé"
-- Une fois cliqué, le token est invalidé et l'email est marqué comme vérifié
-
-### Comment ça marche
-1. L'utilisateur s'inscrit → le serveur crée un token aléatoire en base
-2. Un email est envoyé avec un lien `/verify-email?token=...`
-3. L'utilisateur clique → le serveur vérifie que le token est valide, non expiré, non déjà utilisé
-4. L'email est marqué comme vérifié, le token est désactivé
-
-### Service email
-- **Développement** : Mailhog — un faux serveur email dans Docker. Les emails n'arrivent pas vraiment, ils sont lisibles sur `http://localhost:8025`
-- **Production** : Resend — un vrai service d'envoi via clé API (`RESEND_API_KEY`)
-
-### Connexion bloquée tant que l'email n'est pas vérifié
-Un utilisateur dont l'email n'est pas vérifié ne peut pas se connecter. Voici pourquoi ce choix est justifié :
-
-Sans cette restriction, quelqu'un pourrait créer un compte avec l'adresse email d'une autre personne, puis se connecter immédiatement et agir en son nom. La vérification de l'email sert précisément à prouver que la personne qui s'inscrit possède bien cette adresse — autoriser la connexion avant cette preuve viderait la vérification de son sens.
-
-En pratique, si la vérification échoue (email en retard, spam), le serveur retourne un code `403` avec un message explicite invitant à vérifier la boîte mail, plutôt qu'un `401` générique.
-
----
-
 ## Validation des entrées (SEC-002)
 
 ### C'est quoi le problème ?

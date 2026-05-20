@@ -5,7 +5,7 @@ let syncRunning = false;
 
 const cronEnabled =
       process.env.ENABLE_WELOVEDEVS_CRON === "true" || process.env.NODE_ENV === "production";
-const cronSchedule = process.env.WELOVEDEVS_CRON_SCHEDULE || "*/10 * * * *";
+const cronSchedule = process.env.WELOVEDEVS_CRON_SCHEDULE || "* * * * *";
 
 if (process.env.NODE_ENV !== "test" && cronEnabled) {
       cron.schedule(cronSchedule, async () => {

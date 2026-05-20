@@ -5,6 +5,8 @@ import api from '../../services/api';
 import BurgerMenu from '../../components/BurgerMenu/BurgerMenu';
 import OfferModal from '../../components/Offermodal/OfferModal';
 import ThemeToggleButton from '../../components/ThemeToggleButton/ThemeToggleButton';
+import AccessibilityTrigger from '../../components/AccessibilityWidget/AccessibilityTrigger';
+import useAuthStore from '../../store/authStore';
 
 type User = {
       id: string;
@@ -66,6 +68,7 @@ export default function Profile({ accessibilityEnabled, setAccessibilityEnabled 
             confirmPassword: ''
       });
       const [message, setMessage] = useState({ type: '', text: '' });
+      const logout = useAuthStore((state: any) => state.logout);
 
       useEffect(() => {
             API.get('/users/me')
@@ -165,6 +168,7 @@ export default function Profile({ accessibilityEnabled, setAccessibilityEnabled 
       return (
             <div className={styles.container}>
                   <div className={styles.topBar}>
+                        <AccessibilityTrigger className={`${styles.iconButton} ${styles.themeButton}`} />
                         <ThemeToggleButton className={`${styles.iconButton} ${styles.themeButton}`} />
 
                         <button
@@ -227,10 +231,24 @@ export default function Profile({ accessibilityEnabled, setAccessibilityEnabled 
                                           </div>
                                     </div>
                                     <div className={styles.modalFooter}>
-                                          <button className={styles.deleteButton}>
+                                          <button 
+                                                className={styles.deleteButton}
+                                                onClick={() => {
+                                                      if (window.confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')) {
+                                                            // Implémentation future : appel API pour supprimer le compte
+                                                            console.log('Suppression du compte demandée');
+                                                      }
+                                                }}
+                                          >
                                                 Supprimer le compte
                                           </button>
-                                          <button className={styles.logoutButton}>
+                                          <button 
+                                                className={styles.logoutButton}
+                                                onClick={() => {
+                                                      logout();
+                                                      window.location.href = '/login';
+                                                }}
+                                          >
                                                 Déconnexion
                                           </button>
                                     </div>

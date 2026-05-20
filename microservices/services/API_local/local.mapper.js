@@ -11,8 +11,8 @@ const normalizeContractType = (type) => {
 const normalizeLevel = (experience) => {
       if (!experience || isNaN(experience)) return null;
       const exp = parseInt(experience);
-      if (exp <= 2) return 'junior';
-      if (exp <= 5) return 'mid';
+      if (exp <= 2) return 'débutant';
+      if (exp <= 5) return 'confirmé';
       return 'senior';
 };
 

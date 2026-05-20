@@ -8,14 +8,12 @@
     color: var(--text);
 }
 
-/* ── Header (identique Home) ── */
+/* ── Header ── */
 .header {
     background: var(--bg);
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
-    align-items: center;
-    gap: 0.75rem;
     z-index: 100;
 }
 
@@ -32,6 +30,12 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .logoMark {
@@ -67,16 +71,6 @@
     text-align: center;
 }
 
-.heroLabel {
-    display: inline-block;
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #999;
-    margin-bottom: 1rem;
-}
-
 .heroTitle {
     font-family: 'DM Serif Display', serif;
     font-size: clamp(1.8rem, 4vw, 3rem);
@@ -91,7 +85,6 @@
     color: var(--text);
 }
 
-/* Invert hero title colors when site is in dark mode */
 :global(:root.dark) .page .heroTitle {
     color: var(--text);
 }
@@ -105,21 +98,17 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .slot {
     background: var(--bg);
     border: 1px solid var(--border);
-    padding: 3rem 2rem;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
-
-    justify-content: center;
-    gap: 1rem;
+    gap: 0.75rem;
     position: relative;
-    min-height: 200px;
     transition: box-shadow 0.2s, transform 0.2s;
 }
 
@@ -129,38 +118,393 @@
 }
 
 .slotNumber {
-    position: absolute;
-    top: 1rem;
-    left: 1.25rem;
     font-size: 0.75rem;
     font-weight: 500;
     color: var(--border);
     letter-spacing: 0.04em;
 }
 
-.slotBtn {
-    width: 60px;
-    height: 60px;
-    border: 1.5px solid var(--text-h);
-    background: none;
+.slotLabel {
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text);
+}
+
+.slotInput {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-h);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    outline: none;
+}
+
+.slotInput:focus {
+    border-color: var(--text-h);
+}
+
+.slotInput::placeholder {
+    color: var(--border);
+    font-size: 0.8rem;
+}
+
+.slotPicker {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-h);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.slotPicker:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.slotPicker:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.pickerOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    color: var(--text-h);
-    transition: background 0.2s, color 0.2s;
+    z-index: 200;
 }
 
-.slotBtn:hover {
+.pickerModal {
+    background-color: var(--bg);
+    color: var(--text-h);
+    width: 90%;
+    max-width: 500px;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    animation: modalAppear 0.3s ease-out;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.pickerHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.pickerTitle {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-h);
+}
+
+.pickerClose {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--text);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.pickerClose:hover {
+    color: var(--accent);
+}
+
+.pickerList {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.pickerList::-webkit-scrollbar {
+    width: 4px;
+}
+
+.pickerList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.pickerList::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+.pickerItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    background: var(--social-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pickerItem:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+    border-color: var(--accent);
+}
+
+.pickerItemTitle {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-h);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pickerItemMeta {
+    font-size: 0.8rem;
+    color: var(--text);
+}
+
+.emptyPicker {
+    color: var(--text);
+    font-style: italic;
+    text-align: center;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+/* ── Section offre idéale ── */
+.idealSection {
+    border: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+}
+
+.idealToggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-h);
+}
+
+.idealToggle:hover {
+    background: var(--accent-bg);
+    color: var(--accent);
+}
+
+.idealForm {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem;
+}
+
+.idealHint {
+    font-size: 0.82rem;
+    color: var(--text);
+    margin: 0 0 1.5rem;
+    line-height: 1.5;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.formGroupFull {
+    grid-column: 1 / -1;
+}
+
+.formLabel {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+}
+
+.formInput {
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-h);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.formInput:focus {
+    border-color: var(--text-h);
+}
+
+.formInput::placeholder {
+    color: var(--border);
+}
+
+.formTextarea {
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-h);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.2s;
+    line-height: 1.5;
+}
+
+.formTextarea:focus {
+    border-color: var(--text-h);
+}
+
+.formTextarea::placeholder {
+    color: var(--border);
+}
+
+/* Pills contrat / niveau */
+.pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.pill {
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.pillActive {
     background: var(--text-h);
     color: var(--bg);
+    border-color: var(--text-h);
 }
 
-.slotHint {
-    font-size: 0.82rem;
+/* Skills */
+.skillsWrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    min-height: 44px;
+    align-items: center;
+}
+
+.skillTag {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.6rem;
+    background: var(--accent-bg);
+    color: var(--accent);
+    border: 1px solid var(--accent-border);
+    font-size: 0.8rem;
+}
+
+.skillRemove {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+}
+
+.skillInput {
+    flex: 1;
+    min-width: 120px;
+    border: none;
+    background: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text-h);
+    outline: none;
+}
+
+.skillInput::placeholder {
     color: var(--border);
-    margin: 0;
-    letter-spacing: 0.02em;
+}
+
+.skillSuggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+}
+
+.skillSuggestion {
+    padding: 0.2rem 0.6rem;
+    border: 1px dashed var(--border);
+    background: none;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.skillSuggestion:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* ── Erreur ── */
+.errorMsg {
+    text-align: center;
+    color: #cc0000;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
 }
 
 /* ── Bouton comparer ── */
@@ -184,12 +528,65 @@
     transition: background 0.2s, color 0.2s;
 }
 
-.compareBtn:hover {
-    background: var(--bg);
-    color: var(--text-h);
+.compareBtn:hover:not(:disabled) {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
 }
 
-/* ── Tableau comparatif ── */
+.compareBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ── Résultat ── */
+.resultWrap {
+    animation: fadeUp 0.3s ease;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.winnerBanner {
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-border);
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.winnerLabel {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.winnerTitle {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    color: var(--text-h);
+    line-height: 1.3;
+}
+
+.winnerCompany {
+    font-size: 0.85rem;
+    color: var(--text);
+}
+
+/* ── Tableau ── */
 .tableWrap {
     overflow-x: auto;
 }
@@ -211,11 +608,40 @@
     color: var(--text);
     border-bottom: 1px solid var(--border);
     text-align: left;
+    vertical-align: top;
 }
 
 .thOffer {
     text-align: center;
-    width: 160px;
+    width: 240px;
+}
+
+.thWinner {
+    background: var(--accent-bg);
+    color: var(--accent);
+}
+
+.crown {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.offerTitleShort {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-h);
+    line-height: 1.3;
+    margin-bottom: 0.2rem;
+    white-space: normal;
+}
+
+.offerCompany {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--text);
 }
 
 .tr:last-child td {
@@ -228,14 +654,58 @@
     color: var(--text-h);
     border-bottom: 1px solid var(--border);
     font-weight: 500;
+    white-space: nowrap;
 }
 
 .tdValue {
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1.5rem;
     text-align: center;
     border-bottom: 1px solid var(--border);
+    vertical-align: top;
 }
 
+/* Score */
+.scoreWrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.scoreNum {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.scoreNumWinner {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.scoreTrack {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+}
+
+.scoreFill {
+    height: 100%;
+    background: var(--text);
+    transition: width 0.6s ease;
+}
+
+.scoreFillWinner {
+    background: var(--accent);
+}
+
+/* Data values */
+.dataVal {
+    font-size: 0.85rem;
+    color: var(--text-h);
+}
+
+/* Check / Cross */
 .check {
     display: inline-flex;
     align-items: center;
@@ -262,11 +732,55 @@
     font-weight: 600;
 }
 
+/* Pros / Cons */
+.prosList,
+.consList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.pro,
+.con {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    padding-left: 1.1rem;
+    position: relative;
+}
+
+.pro::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.con::before {
+    content: '✗';
+    position: absolute;
+    left: 0;
+    color: #cc0000;
+    font-weight: 600;
+}
+
+.empty {
+    font-size: 0.8rem;
+    color: var(--border);
+}
+
+/* ── Misc ── */
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .iconButton {
-    position: fixed;
-    top: 16px;
-    right: 64px;
-    z-index: 2001;
     width: 36px;
     height: 36px;
     display: flex;
@@ -298,46 +812,23 @@
     padding: 0.75rem 1rem;
   }
 
-  .iconButton {
-    right: 56px;
-    top: 12px;
-  }
-
   .main {
     padding: 0 1rem 3rem;
   }
 
-  .hero {
-    padding: 2rem 0 1.5rem;
-  }
+    .slots {
+        grid-template-columns: 1fr;
+    }
 
-  .slots {
-    grid-template-columns: 1fr;
-  }
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
 
-  .slot {
-    min-height: 130px;
-    padding: 1.5rem 1rem;
-  }
+    .thOffer {
+        width: 140px;
+    }
 
-  .compareBtn {
-    width: 100%;
-    padding: 0.85rem 1rem;
-  }
-
-  .tableWrap {
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .thCriteria,
-  .thOffer {
-    padding: 0.75rem 1rem;
-    font-size: 0.65rem;
-  }
-
-  .tdLabel,
-  .tdValue {
-    padding: 0.75rem 1rem;
-    font-size: 0.82rem;
-  }
+    .tdLabel {
+        white-space: normal;
+    }
 }
