@@ -9,6 +9,7 @@ import offersRoutes from './routes/offers.routes.js';
 import favoritesRoutes from './routes/favorites.routes.js';
 import { authMiddleware } from './middlewares/auth.middleware.js';
 import adminRoutes from './routes/admin.routes.js';
+import aiRoutes from './routes/ai.routes.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -27,12 +28,14 @@ app.use(rateLimit({
 
 
 
-app.use(cors({
-  origin: process.env.CORS_ORIGIN,
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
-}));
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '100kb' }));
 app.use('/', healthRoutes);
@@ -43,6 +46,7 @@ app.use('/api/offers', offersRoutes);
 app.use('/api/favorites', favoritesRoutes);
 app.use('/api/offers/import', authMiddleware, importRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.use((req, res, next) => {
   const error = new Error(`Route introuvable : ${req.method} ${req.url}`);

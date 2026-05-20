@@ -26,12 +26,13 @@ CREATE TABLE offers (
   remote BOOLEAN DEFAULT false,
   duration_months INTEGER,
   level VARCHAR(50)
-    CHECK (level IN ('junior', 'mid', 'senior')),
+    CHECK (level IN ('débutant', 'confirmé', 'senior', 'non précisé')),
   location VARCHAR(255),
   description TEXT,
-  summary_ai TEXT,
   source_url TEXT,
   is_visible BOOLEAN DEFAULT true,
+  remote_policy VARCHAR(50),
+  skills JSONB DEFAULT '[]',
   fetched_at TIMESTAMP DEFAULT NOW(),
   UNIQUE (external_id, source)
 );
@@ -42,3 +43,7 @@ CREATE TABLE favorites (
   saved_at TIMESTAMP DEFAULT NOW(),
   PRIMARY KEY (user_id, offer_id)
 );
+
+CREATE EXTENSION IF NOT EXISTS vector; -- extension pour vectorisation pour stocker les embeddings
+ALTER TABLE offers ADD COLUMN IF NOT EXISTS embedding vector(384);
+CREATE INDEX IF NOT EXISTS idx_offers_embedding ON offers USING ivfflat (embedding vector_cosine_ops); -- index pour accélérer les recherches de similarité

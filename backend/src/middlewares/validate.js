@@ -3,6 +3,10 @@ export const validate = (schema, source = 'body') => (req, res, next) => {
   if (!result.success) {
     return res.status(400).json({ error: result.error.issues[0].message });
   }
-  req[source] = result.data;
+  if (source === 'query') {
+    Object.assign(req.query, result.data);
+  } else {
+    req[source] = result.data;
+  }
   next();
 };

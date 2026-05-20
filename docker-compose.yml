@@ -20,13 +20,16 @@ services:
     depends_on:
       database:
         condition: service_healthy
-      mailhog:
-        condition: service_started
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
+      - PGUSER=jobuser
+      - PGPASSWORD=jobpass
+      - PGHOST=database
+      - PGPORT=5432
+      - PGDATABASE=jobdb
       - NODE_ENV=development
+      - MICROSERVICES_URL=http://microservices:5000
     networks:
       - app-network
     healthcheck:
@@ -46,10 +49,17 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      ai-service:
+        condition: service_healthy
     env_file:
       - .env
     environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
+      - ENABLE_WELOVEDEVS_CRON=true
+      - AI_SERVICE_URL=http://ai-service:8000
     networks:
       - app-network
     healthcheck:
@@ -62,30 +72,31 @@ services:
     build: ./ai-service
     ports:
       - "8000:8000"
+    depends_on:
+      database:
+        condition: service_healthy
     env_file:
       - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
+      - OLLAMA_URL=http://ollama:11434
     networks:
       - app-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 10s
       timeout: 5s
-      retries: 5
-
-  mailhog:
-    image: mailhog/mailhog
-    ports:
-      - "1025:1025"
-      - "8025:8025"
-    networks:
-      - app-network
+      retries: 10
 
   database:
-    image: postgres:15
+    image : pgvector/pgvector:pg15
     ports:
       - "5432:5432"
-    # env_file:
-    #   - .env
+    env_file:
+      - .env
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}

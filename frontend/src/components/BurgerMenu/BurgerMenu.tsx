@@ -74,14 +74,22 @@ const adminNavLinks = [
 
 interface BurgerMenuProps {
   isAdmin?: boolean;
+  className?: string;
 }
 
-export default function BurgerMenu({ isAdmin = false }: BurgerMenuProps) {
+export default function BurgerMenu({ isAdmin = false, className = '' }: BurgerMenuProps) {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
   const navLinks = isAdmin ? adminNavLinks : userNavLinks;
+
+  const buttonClasses = [
+    styles.burgerBtn,
+    open ? styles.burgerOpen : '',
+    isAdmin ? styles.fixed : '',
+    className
+  ].filter(Boolean).join(' ');
 
   // Ferme le menu quand on change de page
   useEffect(() => {
@@ -106,7 +114,7 @@ export default function BurgerMenu({ isAdmin = false }: BurgerMenuProps) {
     <>
       {/* Bouton burger */}
       <button
-        className={`${styles.burgerBtn} ${open ? styles.burgerOpen : ''}`}
+        className={buttonClasses}
         onClick={() => setOpen(!open)}
         aria-label="Menu"
         aria-expanded={open}

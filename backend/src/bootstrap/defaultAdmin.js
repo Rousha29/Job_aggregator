@@ -3,16 +3,18 @@ import pool from '../config/db.js';
 
 const DEFAULT_ADMIN_EMAIL = process.env.DEFAULT_ADMIN_EMAIL;
 const DEFAULT_ADMIN_PASSWORD = process.env.DEFAULT_ADMIN_PASSWORD;
-const DEFAULT_ADMIN_FULL_NAME = 'admin';
-
-if (!DEFAULT_ADMIN_EMAIL) {
-      throw new Error('DEFAULT_ADMIN_EMAIL est manquant dans les variables d\'environnement');
-}
-if (!DEFAULT_ADMIN_PASSWORD) {
-      throw new Error('DEFAULT_ADMIN_PASSWORD est manquant dans les variables d\'environnement');
-}
+const DEFAULT_ADMIN_FULL_NAME = process.env.DEFAULT_ADMIN_FULL_NAME || 'Admin';
+const ENABLE_DEFAULT_ADMIN = process.env.ENABLE_DEFAULT_ADMIN === 'true';
 
 export const ensureDefaultAdminAccount = async () => {
+      if (!ENABLE_DEFAULT_ADMIN) {
+            return;
+      }
+
+      if (!DEFAULT_ADMIN_EMAIL || !DEFAULT_ADMIN_PASSWORD) {
+            throw new Error('DEFAULT_ADMIN_EMAIL and DEFAULT_ADMIN_PASSWORD must be set');
+      }
+
       const roleResult = await pool.query(
             "SELECT id FROM roles WHERE name = 'admin' LIMIT 1"
       );
@@ -28,11 +30,10 @@ export const ensureDefaultAdminAccount = async () => {
             'SELECT id, password_hash FROM users WHERE email = $1 LIMIT 1',
             [DEFAULT_ADMIN_EMAIL]
       );
-
       if (existingUserResult.rows.length === 0) {
             await pool.query(
-                  `INSERT INTO users (email, password_hash, full_name, role_id, email_verified)
-       VALUES ($1, $2, $3, $4, true)`,
+                  `INSERT INTO users (email, password_hash, full_name, role_id)
+       VALUES ($1, $2, $3, $4)`,
                   [DEFAULT_ADMIN_EMAIL, passwordHash, DEFAULT_ADMIN_FULL_NAME, adminRoleId]
             );
             return;
@@ -55,9 +56,4 @@ export const ensureDefaultAdminAccount = async () => {
             );
       }
 
-      // Garantir que l'admin est toujours vérifié (si la colonne a été ajoutée après la création)
-      await pool.query(
-            'UPDATE users SET email_verified = true WHERE id = $1',
-            [existingUserResult.rows[0].id]
-      );
 };
