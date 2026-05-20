@@ -13,7 +13,8 @@ import AdminRoute from './components/AdminRoute';
 
 function App() {
   const [accessibilityEnabled, setAccessibilityEnabled] = useState<boolean>(() => {
-    return localStorage.getItem('ja_accessibility_enabled') === 'true';
+    const saved = localStorage.getItem('ja_accessibility_enabled');
+    return saved === null ? true : saved === 'true';
   });
 
   useEffect(() => {
@@ -26,22 +27,13 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route
-          path="/profile"
-          element={
-            <Profile
-              accessibilityEnabled={accessibilityEnabled}
-              setAccessibilityEnabled={setAccessibilityEnabled}
-            />
-          }
-        />
+        <Route path="/profile" element={<Profile accessibilityEnabled={accessibilityEnabled} setAccessibilityEnabled={setAccessibilityEnabled} />} />
         <Route path="/home" element={<Home />} />
         <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/admin/offers" element={<AdminRoute><AdminOffers /></AdminRoute>} />
         <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
         <Route path="/comparateur" element={<Comparateur />} />
       </Routes>
-      <AccessibilityWidget enabled={accessibilityEnabled} />
     </>
   );
 }

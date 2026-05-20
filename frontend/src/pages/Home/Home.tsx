@@ -5,6 +5,7 @@ import BurgerMenu from '../../components/BurgerMenu/BurgerMenu';
 import FilterPanel, { type Filters } from '../../components/FilterPanel/FilterPanel';
 import OfferModal from '../../components/Offermodal/OfferModal';
 import ThemeToggleButton from '../../components/ThemeToggleButton/ThemeToggleButton';
+import AccessibilityTrigger from '../../components/AccessibilityWidget/AccessibilityTrigger';
 import api from '../../services/api';
 
 interface Offer {
@@ -82,13 +83,8 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
     setLoading(true);
+    setError('');
 
     const mappedContractTypes = filters.contractTypes.map(
       (c) => CONTRACT_TYPE_MAP[c] ?? c
@@ -111,14 +107,13 @@ export default function Home() {
         setFiltered(list);
         setTotal(data.totalCount ?? 0);
         setLoading(false);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
       })
       .catch((err) => {
         console.error('Error fetching jobs:', err);
         setError('Impossible de charger les offres');
         setLoading(false);
       });
-  }, [navigate, page, search, filters]);
+  }, [page, search, filters.contractTypes, filters.remote, filters.salaryMin, filters.skills]);
 
   const formatSalary = (offer: Offer) => {
     const s = offer.details?.salary;
@@ -171,6 +166,7 @@ export default function Home() {
             <span className={styles.logoText}>Job Aggregator</span>
           </div>
           <div className={styles.headerActions}>
+            <AccessibilityTrigger className={styles.themeToggle} />
             <ThemeToggleButton className={styles.themeToggle} />
             <BurgerMenu />
           </div>

@@ -3,7 +3,7 @@ import type { AxiosRequestHeaders } from 'axios';
 import type { RegisterData, LoginData, AuthResponse, UpdateUserData } from '../types/auth';
 
 const API = axios.create({
-  baseURL: 'http://localhost:4000/api'
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4000/api'
 });
 
 export const registerUser = (data: RegisterData) =>
@@ -17,7 +17,7 @@ export const updateProfile = (data: UpdateUserData) =>
 
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  if (token) {
+  if (token && token !== 'undefined' && token !== 'null') {
     const headers = (config.headers ?? {}) as AxiosRequestHeaders;
     headers.Authorization = `Bearer ${token}`;
     config.headers = headers;

@@ -7,7 +7,7 @@ import { offersQuerySchema } from '../schemas/offers.js';
 
 const router = express.Router();
 
-router.get('/jobs', authMiddleware, validate(offersQuerySchema, 'query'), getJobs);
+router.get('/jobs', validate(offersQuerySchema, 'query'), getJobs);
 router.post('/compare', authMiddleware, compareOffers);
 
 export default router;

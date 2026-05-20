@@ -31,6 +31,8 @@ CREATE TABLE offers (
   description TEXT,
   source_url TEXT,
   is_visible BOOLEAN DEFAULT true,
+  remote_policy VARCHAR(50),
+  skills JSONB DEFAULT '[]',
   fetched_at TIMESTAMP DEFAULT NOW(),
   UNIQUE (external_id, source)
 );

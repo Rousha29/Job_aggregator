@@ -9,8 +9,8 @@ export const fetchJobs = async (page = 0, size = 20, q = '', contractTypes = [],
 
   if (q) {
     const searchPattern = `%${q}%`;
-    query += ` WHERE (title ILIKE $${paramIndex} OR company ILIKE $${paramIndex} OR location ILIKE $${paramIndex})`;
-    countQuery += ` WHERE (title ILIKE $${paramIndex} OR company ILIKE $${paramIndex} OR location ILIKE $${paramIndex})`;
+    query += ` AND (title ILIKE $${paramIndex} OR company ILIKE $${paramIndex} OR location ILIKE $${paramIndex})`;
+    countQuery += ` AND (title ILIKE $${paramIndex} OR company ILIKE $${paramIndex} OR location ILIKE $${paramIndex})`;
     params.push(searchPattern);
     paramIndex++;
   }
@@ -59,8 +59,10 @@ if (skills.length > 0) {
   query += ` ORDER BY fetched_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
   const queryParams = [...params, size, offset];
 
-  console.log('SQL:', query);
-  console.log('Params:', params);
+  console.log('SQL Query:', query);
+  console.log('SQL Params:', queryParams);
+  console.log('Count Query:', countQuery);
+  console.log('Count Params:', params);
 
   try {
     const [res, countRes] = await Promise.all([
@@ -69,6 +71,8 @@ if (skills.length > 0) {
     ]);
 
     const totalCount = parseInt(countRes.rows[0].count);
+    console.log(`Found ${res.rows.length} rows, total count: ${totalCount}`);
+
     const values = res.rows.map(row => ({
       id: row.id,
       title: row.title,
@@ -82,7 +86,7 @@ if (skills.length > 0) {
       },
       skillsList: Array.isArray(row.skills) ? row.skills.map(s => ({ name: s })) : [],
       descriptionPreview: row.description,
-      publishDate: row.fetched_at ? new Date(row.fetched_at).getTime() * 1000 : null,
+      publishDate: row.fetched_at ? new Date(row.fetched_at).getTime() : null,
       seoAlias: row.source_url ? row.source_url.split('/').pop() : null,
     }));
 

@@ -32,8 +32,8 @@ export const ensureDefaultAdminAccount = async () => {
       );
       if (existingUserResult.rows.length === 0) {
             await pool.query(
-                  `INSERT INTO users (email, password_hash, full_name, role_id, email_verified)
-       VALUES ($1, $2, $3, $4, true)`,
+                  `INSERT INTO users (email, password_hash, full_name, role_id)
+       VALUES ($1, $2, $3, $4)`,
                   [DEFAULT_ADMIN_EMAIL, passwordHash, DEFAULT_ADMIN_FULL_NAME, adminRoleId]
             );
             return;
@@ -56,9 +56,4 @@ export const ensureDefaultAdminAccount = async () => {
             );
       }
 
-      // Garantir que l'admin est toujours vérifié (si la colonne a été ajoutée après la création)
-      await pool.query(
-            'UPDATE users SET email_verified = true WHERE id = $1',
-            [existingUserResult.rows[0].id]
-      );
 };

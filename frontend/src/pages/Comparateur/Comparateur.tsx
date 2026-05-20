@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import styles from './Comparateur.module.css';
 import BurgerMenu from '../../components/BurgerMenu/BurgerMenu';
 import ThemeToggleButton from '../../components/ThemeToggleButton/ThemeToggleButton';
+import AccessibilityTrigger from '../../components/AccessibilityWidget/AccessibilityTrigger';
 import api from '../../services/api';
 
 // Types
@@ -165,9 +166,10 @@ export default function Comparateur() {
                         <span className={styles.logoMark}>JA</span>
                         <span className={styles.logoText}>Job Aggregator</span>
                     </div>
-                    <div className={styles.headerActions}>
-                        <ThemeToggleButton className={styles.iconButton} />
-                        <BurgerMenu />
+                    <div className={styles.topBar}>
+                          <AccessibilityTrigger className={styles.iconButton} />
+                          <ThemeToggleButton className={styles.iconButton} />
+                          <BurgerMenu />
                     </div>
                 </div>
             </header>

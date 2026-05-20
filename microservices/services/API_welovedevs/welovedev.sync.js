@@ -52,18 +52,19 @@ export async function syncWeLoveDevs() {
                               const insertResult = await pool.query(
                                     `INSERT INTO offers (
                   external_id, source, title, description, company, location,
-                  contract_type, salary_min, salary_max, remote,
+                  contract_type, salary_min, salary_max, remote, remote_policy, skills,
                   level, source_url, fetched_at
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW())
                 ON CONFLICT (external_id, source) DO UPDATE SET
                   title=$3, description=$4, company=$5, location=$6,
                   contract_type=$7, salary_min=$8, salary_max=$9,
-                  remote=$10, level=$11, source_url=$12, fetched_at=NOW()
+                  remote=$10, remote_policy=$11, skills=$12, level=$13, source_url=$14, fetched_at=NOW()
                 RETURNING id`,
                                     [
                                           job.externalId, 'welovedevs', job.title, job.description, job.company,
                                           job.location, job.contract_type, job.salary_min, job.salary_max,
-                                          job.remote, job.level, job.source_url
+                                          job.remote, job.remote_policy, JSON.stringify(job.skills),
+                                          job.level, job.source_url
                                     ]
                               );
                               const insertedId = insertResult?.rows?.[0]?.id;

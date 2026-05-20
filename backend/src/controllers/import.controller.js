@@ -9,9 +9,10 @@ const triggerIndexing = () => {
 };
 
 export async function importOffers(req, res) {
+  const microservicesUrl = process.env.MICROSERVICES_URL || 'http://microservices:5000';
   try {
     // 1. Ingestion via microservice
-    const ingestResponse = await fetch('http://microservices:5000/api/ingest', {
+    const ingestResponse = await fetch(`${microservicesUrl}/api/ingest`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(req.body),
@@ -39,8 +40,9 @@ export async function importOffers(req, res) {
 
 // Ingestion depuis un fichier JSON local
 export async function importLocalJSON(req, res) {
+  const microservicesUrl = process.env.MICROSERVICES_URL || 'http://microservices:5000';
   try {
-    const response = await fetch('http://microservices:5000/api/ingest/local', {
+    const response = await fetch(`${microservicesUrl}/api/ingest/local`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(req.body),

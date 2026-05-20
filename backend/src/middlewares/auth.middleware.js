@@ -8,11 +8,15 @@ export const authMiddleware = (req, res, next) => {
       return res.status(500).json({ error: 'Server config error' });
     }
 
-   const token = req.cookies?.token;
-    if (!token) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    let token = req.cookies?.token;
+
+    if (!token && req.headers.authorization?.startsWith('Bearer ')) {
+      token = req.headers.authorization.split(' ')[1];
     }
 
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
 
     const decoded = jwt.verify(token, JWT_SECRET);
 

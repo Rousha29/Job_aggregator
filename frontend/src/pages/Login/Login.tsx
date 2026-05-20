@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { loginUser } from '../../services/authService';
 import { useNavigate, Link } from 'react-router-dom';
 import type { LoginData } from '../../types/auth';
+import AccessibilityTrigger from '../../components/AccessibilityWidget/AccessibilityTrigger';
 import styles from './Login.module.css';
 
 export default function Login() {
@@ -49,6 +50,7 @@ export default function Login() {
 
   return (
     <div className={styles.page}>
+      <AccessibilityTrigger className={styles.a11yBtn} />
       <div className={styles.card}>
         <div className={styles.header}>
           <span className={styles.label}>Job Aggregator</span>

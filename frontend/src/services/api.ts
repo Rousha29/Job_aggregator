@@ -9,13 +9,12 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token')
-    if (token) {
+    if (token && token !== 'undefined' && token !== 'null') {
         const headers = (config.headers ?? {}) as AxiosRequestHeaders
         headers.Authorization = `Bearer ${token}`
         config.headers = headers
     }
     return config
-    withCredentials: true
 })
 
 export default api
