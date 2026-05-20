@@ -18,6 +18,8 @@ export const getJobs = async (req, res) => {
     console.log('Filters received:', { contractTypes, remote, salaryMin, skills });
 
     const data = await fetchJobs(page, size, q, contractTypes, remote, salaryMin, skills);
+    const { page, size, q } = req.query;
+    const data = await fetchJobs(page, size, q);
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });

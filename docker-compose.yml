@@ -2,7 +2,6 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:5173"
       - "5173:5173"
     depends_on:
       - backend
@@ -21,6 +20,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      mailhog:
+        condition: service_started
     env_file:
       - .env
     environment:
@@ -72,6 +73,14 @@ services:
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
       - OLLAMA_URL=http://ollama:11434
+    networks:
+      - app-network
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
     networks:
       - app-network
 

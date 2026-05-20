@@ -9,8 +9,8 @@ export const fetchJobs = async (page = 0, size = 20, q = '', contractTypes = [],
 
   if (q) {
     const searchPattern = `%${q}%`;
-    query += ` AND (title ILIKE $${paramIndex} OR company ILIKE $${paramIndex} OR location ILIKE $${paramIndex})`;
-    countQuery += ` AND (title ILIKE $${paramIndex} OR company ILIKE $${paramIndex} OR location ILIKE $${paramIndex})`;
+    query += ` WHERE (title ILIKE $${paramIndex} OR company ILIKE $${paramIndex} OR location ILIKE $${paramIndex})`;
+    countQuery += ` WHERE (title ILIKE $${paramIndex} OR company ILIKE $${paramIndex} OR location ILIKE $${paramIndex})`;
     params.push(searchPattern);
     paramIndex++;
   }

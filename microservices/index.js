@@ -21,13 +21,30 @@ const sendSyncError = (res, err) => {
       res.status(status).json({ error: err.message });
 };
 
+const SYNC_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes entre deux syncs manuelles
+let syncRunning = false;
+let lastSyncAt = null;
+
 // Ingest endpoint (WeLoveDevs)
 app.post('/api/ingest', async (req, res) => {
+      if (syncRunning) {
+            return res.status(429).json({ error: 'Une synchronisation est déjà en cours.' });
+      }
+
+      if (lastSyncAt && Date.now() - lastSyncAt < SYNC_COOLDOWN_MS) {
+            const remainingSec = Math.ceil((SYNC_COOLDOWN_MS - (Date.now() - lastSyncAt)) / 1000);
+            return res.status(429).json({ error: `Cooldown actif. Réessayez dans ${remainingSec}s.` });
+      }
+
+      syncRunning = true;
+      lastSyncAt = Date.now();
       try {
             const result = await syncWeLoveDevs();
             res.json({ success: true, ...result });
       } catch (err) {
             sendSyncError(res, err);
+      } finally {
+            syncRunning = false;
       }
 });
 

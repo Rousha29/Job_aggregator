@@ -15,6 +15,7 @@ api.interceptors.request.use((config) => {
         config.headers = headers
     }
     return config
+    withCredentials: true
 })
 
 export default api

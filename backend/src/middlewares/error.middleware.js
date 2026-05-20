@@ -1,14 +1,19 @@
-export const errorMiddleware = (err, req, res, next) => {
+import { AppError } from '../errors/AppError.js';
 
-  console.error(`[Erreur] ${req.method} ${req.url} →`, err.message);
+export const errorMiddleware = (err, req, res, next) => {
+  console.error(`[Erreur] ${req.method} ${req.url} →`, err);
+
+  if (err instanceof AppError) {
+    return res.status(err.statusCode).json({
+      error: err.message,
+      ...(err.code && { code: err.code })
+    });
+  }
 
   const isDev = process.env.NODE_ENV !== 'production';
 
-  const status = err.status || 500;
-
-  return res.status(status).json({
-    error: err.message || 'Erreur interne du serveur',
-    // La stack technique n'est visible qu'en développement
-    ...(isDev && { stack: err.stack }),
+  return res.status(500).json({
+    error: 'Erreur interne du serveur',
+    ...(isDev && { stack: err.stack })
   });
 };
