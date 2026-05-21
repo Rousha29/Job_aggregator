@@ -25,7 +25,12 @@ function AdminDashboard() {
     setMessage('');
     try {
       const res = await triggerIngestion();
-      setMessage(`✅ Ingestion terminée : ${res.data.welovedevs?.synced ?? 0} offres WeLoveDevs`);
+      if (res.data?.success === false && res.data?.message) {
+        setMessage(`ℹ️ ${res.data.message}`);
+      } else {
+        const synced = res.data?.synced ?? 0;
+        setMessage(`✅ Ingestion terminée : ${synced} offres WeLoveDevs`);
+      }
       const updated = await getStats();
       setStats(updated.data);
     } catch {

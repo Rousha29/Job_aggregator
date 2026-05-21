@@ -37,7 +37,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use(express.json({ limit: '100kb' }));
+// Increase JSON body size to allow local JSON import payloads
+app.use(express.json({ limit: process.env.EXPRESS_JSON_LIMIT || '1mb' }));
 app.use('/', healthRoutes);
 app.use('/api/test', testRoutes);
 app.use('/api/auth', authRoutes);
