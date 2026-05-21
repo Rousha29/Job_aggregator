@@ -13,9 +13,9 @@
   justify-content: center;
   width: 48px;
   height: 48px;
-  background: #ffffff;
-  border: 1px solid #ddd;
-  color: #555;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
   cursor: pointer;
   position: relative;
   transition: all 0.2s;
@@ -23,14 +23,14 @@
 }
 
 .trigger:hover {
-  border-color: #1a1a1a;
-  color: #1a1a1a;
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .triggerActive {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
-  color: #ffffff;
+  background: var(--text-h);
+  border-color: var(--text-h);
+  color: var(--bg);
 }
 
 /* ── Badge ── */
@@ -40,7 +40,7 @@
   right: -6px;
   width: 18px;
   height: 18px;
-  background: #1a1a1a;
+  background: var(--accent);
   color: #fff;
   font-size: 0.65rem;
   font-weight: 600;
@@ -48,11 +48,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .triggerActive .badge {
-  background: #fff;
-  color: #1a1a1a;
+  background: var(--bg);
+  color: var(--text-h);
 }
 
 /* ── Panel ── */
@@ -61,12 +62,13 @@
   top: calc(100% + 8px);
   right: 0;
   width: 280px;
-  background: #ffffff;
-  border: 1px solid #e0ddd6;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
   z-index: 200;
   font-family: 'DM Sans', sans-serif;
   box-sizing: border-box;
+  border-radius: 4px;
 }
 
 /* ── Panel header ── */
@@ -75,20 +77,20 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem 0.75rem;
-  border-bottom: 1px solid #f0ede8;
+  border-bottom: 1px solid var(--border);
 }
 
 .panelTitle {
   font-size: 0.85rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--text-h);
   letter-spacing: 0.03em;
 }
 
 .resetBtn {
   font-family: 'DM Sans', sans-serif;
   font-size: 0.75rem;
-  color: #999;
+  color: var(--text);
   background: none;
   border: none;
   cursor: pointer;
@@ -97,13 +99,13 @@
 }
 
 .resetBtn:hover {
-  color: #1a1a1a;
+  color: var(--accent);
 }
 
 /* ── Divider ── */
 .divider {
   height: 1px;
-  background: #f0ede8;
+  background: var(--border);
 }
 
 /* ── Options ── */
@@ -123,14 +125,14 @@
 .checkbox {
   width: 14px;
   height: 14px;
-  accent-color: #1a1a1a;
+  accent-color: var(--accent);
   cursor: pointer;
   flex-shrink: 0;
 }
 
 .optionLabel {
   font-size: 0.85rem;
-  color: #333;
+  color: var(--text);
   user-select: none;
 }
 
@@ -162,12 +164,13 @@
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #aaa;
+  color: var(--text);
+  opacity: 0.8;
 }
 
 .accordionBadge {
-  background: #1a1a1a;
-  color: #fff;
+  background: var(--text-h);
+  color: var(--bg);
   font-size: 0.65rem;
   padding: 0.15rem 0.45rem;
   border-radius: 10px;
@@ -175,7 +178,8 @@
 }
 
 .accordionIcon {
-  color: #aaa;
+  color: var(--text);
+  opacity: 0.5;
   transition: transform 0.2s;
   flex-shrink: 0;
   display: block;
@@ -183,6 +187,7 @@
 
 .accordionIconOpen {
   transform: rotate(180deg);
+  opacity: 1;
 }
 
 .accordionContent {
