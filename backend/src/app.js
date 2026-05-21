@@ -9,17 +9,36 @@ import offersRoutes from './routes/offers.routes.js';
 import favoritesRoutes from './routes/favorites.routes.js';
 import { authMiddleware } from './middlewares/auth.middleware.js';
 import adminRoutes from './routes/admin.routes.js';
+import aiRoutes from './routes/ai.routes.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+app.use(helmet());
+
+app.use(cookieParser());
+
+app.use(rateLimit({
+  windowMs: 60 * 1000, // 1 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
 }));
 
-app.use(express.json({ limit: '20mb' }));
+
+
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+
+// Increase JSON body size to allow local JSON import payloads
+app.use(express.json({ limit: process.env.EXPRESS_JSON_LIMIT || '1mb' }));
 app.use('/', healthRoutes);
 app.use('/api/test', testRoutes);
 app.use('/api/auth', authRoutes);
@@ -28,6 +47,7 @@ app.use('/api/offers', offersRoutes);
 app.use('/api/favorites', favoritesRoutes);
 app.use('/api/offers/import', authMiddleware, importRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.use((req, res, next) => {
   const error = new Error(`Route introuvable : ${req.method} ${req.url}`);

@@ -93,7 +93,7 @@ Mettre en place un middleware de validation centralisé basé sur Zod. Toutes le
 // schemas/auth.ts
 export const registerSchema = z.object({
   email: z.string().email().max(255),
-  password: z.string().min(12).max(128),
+  password: z.string().min(8)).max(128),
 });
 
 // routes/auth.ts
@@ -217,41 +217,6 @@ Créer l'endpoint `POST /api/auth/login` avec rate limiting strict pour bloquer 
 - [ ] Test : succès avec bons identifiants → cookie présent
 
 ### Notes
-Référence : `SECURITY.md §3, §7`. Dépend de SEC-008 pour la génération du JWT.
-
----
-
-## SEC-007 — Vérification email avec token unique
-
-**Labels** : `security` `priority:P1` `area:auth` `type:backend`
-**Milestone** : M2 — Auth & comptes
-**Sprint** : S2
-**Estimate** : 5h
-**Threat Model** : M6
-**Dépendances** : SEC-005
-
-### Description
-Implémenter le flux de vérification email avec service abstrait (Mailhog en dev, Resend en prod). Token cryptographiquement aléatoire, expiration 24h, usage unique.
-
-### Critères d'acceptation
-- [ ] Interface `EmailService` définie avec méthode `sendVerification(email, token)`
-- [ ] Implémentation `MailhogService` pour le dev
-- [ ] Mailhog ajouté au `docker-compose.yml`
-- [ ] Implémentation `ResendService` pour la prod (peut être un stub si déploiement non confirmé)
-- [ ] Choix de l'implémentation via variable d'env `EMAIL_PROVIDER`
-- [ ] Token généré : `crypto.randomBytes(32).toString('hex')`
-- [ ] Table `email_verifications` (`user_id`, `token`, `created_at`, `expires_at`, `used_at`)
-- [ ] Route `POST /api/auth/resend-verification` avec rate limit 1/min/compte
-- [ ] Route `GET /api/auth/verify-email?token=...` (token unique, expire à 24h, marqué `used_at` après usage)
-- [ ] Mail envoyé après inscription contenant le lien
-- [ ] Test : un token utilisé deux fois → 400 le 2e fois
-- [ ] Test : un token expiré → 400
-
-### Notes
-Référence : `SECURITY.md §3`. Mailhog visible sur `http://localhost:8025`.
-
----
-
 ## SEC-008 — Génération JWT et cookie sécurisé
 
 **Labels** : `security` `priority:P0` `area:auth` `type:backend`

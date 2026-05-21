@@ -1,11 +1,20 @@
 import bcrypt from 'bcrypt';
 import pool from '../config/db.js';
 
-const DEFAULT_ADMIN_EMAIL = 'admin@jobaggregator.com';
-const DEFAULT_ADMIN_PASSWORD = 'Admin123!';
-const DEFAULT_ADMIN_FULL_NAME = 'Admin';
+const DEFAULT_ADMIN_EMAIL = process.env.DEFAULT_ADMIN_EMAIL;
+const DEFAULT_ADMIN_PASSWORD = process.env.DEFAULT_ADMIN_PASSWORD;
+const DEFAULT_ADMIN_FULL_NAME = process.env.DEFAULT_ADMIN_FULL_NAME || 'Admin';
+const ENABLE_DEFAULT_ADMIN = process.env.ENABLE_DEFAULT_ADMIN === 'true';
 
 export const ensureDefaultAdminAccount = async () => {
+      if (!ENABLE_DEFAULT_ADMIN) {
+            return;
+      }
+
+      if (!DEFAULT_ADMIN_EMAIL || !DEFAULT_ADMIN_PASSWORD) {
+            throw new Error('DEFAULT_ADMIN_EMAIL and DEFAULT_ADMIN_PASSWORD must be set');
+      }
+
       const roleResult = await pool.query(
             "SELECT id FROM roles WHERE name = 'admin' LIMIT 1"
       );
@@ -15,13 +24,12 @@ export const ensureDefaultAdminAccount = async () => {
       }
 
       const adminRoleId = roleResult.rows[0].id;
-      const passwordHash = await bcrypt.hash(DEFAULT_ADMIN_PASSWORD, 10);
+      const passwordHash = await bcrypt.hash(DEFAULT_ADMIN_PASSWORD, 12);
 
       const existingUserResult = await pool.query(
             'SELECT id, password_hash FROM users WHERE email = $1 LIMIT 1',
             [DEFAULT_ADMIN_EMAIL]
       );
-
       if (existingUserResult.rows.length === 0) {
             await pool.query(
                   `INSERT INTO users (email, password_hash, full_name, role_id)
@@ -47,4 +55,5 @@ export const ensureDefaultAdminAccount = async () => {
                   [passwordHash, DEFAULT_ADMIN_FULL_NAME, adminRoleId, existingUser.id]
             );
       }
+
 };

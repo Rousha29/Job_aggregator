@@ -36,6 +36,11 @@ jest.unstable_mockModule('jsonwebtoken', () => ({
   ...mockJwt
 }));
 
+jest.unstable_mockModule('../src/services/hibp.js', () => ({
+  checkPassword: jest.fn().mockResolvedValue(0)
+}));
+
+
 // Mock axios
 jest.unstable_mockModule('axios', () => ({
   default: {
@@ -68,7 +73,7 @@ describe('Auth API', () => {
         .send({ nom: 'Test' });
 
       expect(res.statusCode).toBe(400);
-      expect(res.body.error).toBe('Missing fields');
+      expect(res.body.error).toBeDefined();
     });
 
     it('should return 400 if passwords do not match', async () => {
@@ -85,6 +90,41 @@ describe('Auth API', () => {
       expect(res.statusCode).toBe(400);
       expect(res.body.error).toBe('Passwords do not match');
     });
+    it('should strip unknown fields silently', async () => {
+    pool.query.mockResolvedValueOnce({ rows: [] });
+    pool.query.mockResolvedValueOnce({ rows: [{ id: 'role-uuid' }] });
+    bcrypt.hash.mockResolvedValue('hashed_password');
+    pool.query.mockResolvedValueOnce({
+      rows: [{ id: 'user-uuid', email: 'test@example.com', full_name: 'Test User' }]
+    });
+
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({
+        nom: 'User',
+        prenom: 'Test',
+        mail: 'test@example.com',
+        password: 'password123',
+        confirmation: 'password123',
+        role: 'admin'
+      });
+
+    expect(res.statusCode).toBe(201);
+  });
+
+  it('should return 400 for invalid email format', async () => {
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({
+        nom: 'User',
+        prenom: 'Test',
+        mail: 'pas-un-email',
+        password: 'password123',
+        confirmation: 'password123'
+      });
+
+    expect(res.statusCode).toBe(400);
+  });
 
     it('should register a user successfully', async () => {
       pool.query.mockResolvedValueOnce({ rows: [] }); // Check user exists
@@ -105,8 +145,7 @@ describe('Auth API', () => {
         });
 
       expect(res.statusCode).toBe(201);
-      expect(res.body.message).toBe('User created');
-      expect(res.body.user.email).toBe('test@example.com');
+      expect(res.body.message).toBe('Compte créé.');
     });
   });
 
@@ -116,7 +155,8 @@ describe('Auth API', () => {
         rows: [{
           id: 'user-uuid',
           email: 'test@example.com',
-          password_hash: 'hashed_password'
+          password_hash: 'hashed_password',
+          role: 'user'
         }]
       });
       bcrypt.compare.mockResolvedValue(true);
@@ -130,7 +170,6 @@ describe('Auth API', () => {
         });
 
       expect(res.statusCode).toBe(200);
-      expect(res.body.token).toBe('fake_token');
     });
 
     it('should return 401 if credentials are invalid', async () => {

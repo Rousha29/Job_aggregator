@@ -1,4 +1,5 @@
 import { registerUser, loginUser } from '../services/authService.js';
+import { checkPassword } from '../services/hibp.js';
 
 export const register = async (req, res) => {
   try {
@@ -11,13 +12,18 @@ export const register = async (req, res) => {
       return res.status(400).json({ error: 'Passwords do not match' });
     }
 
+    const isPwned = await checkPassword(password);
+    if (isPwned > 0) {
+      return res.status(400).json({ error: 'Password has been compromised' });
+    }
+
     const user = await registerUser({
       email: mail,
       password,
       full_name: `${prenom} ${nom}`
     });
 
-    res.status(201).json({ message: 'User created', user });
+    res.status(201).json({ message: 'Compte créé.' });
   } catch (err) {
     console.error('Registration error:', err);
     res.status(400).json({ error: err?.message || 'Registration failed' });
@@ -26,7 +32,20 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { token, role } = await loginUser(req.body);
+    if (!req.body || typeof req.body !== 'object') {
+      return res.status(400).json({ error: 'Missing body' });
+    }
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Missing credentials' });
+    }
+    const { token, role } = await loginUser({ email, password });
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000 // 1 jour en ms
+    });
     res.status(200).json({ token, role });
   } catch (err) {
     res.status(401).json({ error: 'Invalid credentials' });

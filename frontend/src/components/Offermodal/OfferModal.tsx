@@ -52,11 +52,13 @@ const formatRemote = (remote: string) => {
   return map[remote] ?? remote;
 };
 
+const stripHtml = (html: string) =>
+  html.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').trim();
+
 export default function OfferModal({ offer, onClose, onFavoriteToggle }: OfferModalProps) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [loadingFav, setLoadingFav] = useState(false);
 
-  // Ferme avec Escape
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -69,7 +71,6 @@ export default function OfferModal({ offer, onClose, onFavoriteToggle }: OfferMo
     };
   }, [onClose]);
 
-  // Vérifier si déjà en favoris
   useEffect(() => {
     api.get('/favorites')
       .then(res => {
@@ -110,6 +111,9 @@ export default function OfferModal({ offer, onClose, onFavoriteToggle }: OfferMo
   const wldUrl = offer.seoAlias
     ? `https://welovedevs.com/app/jobs/${offer.seoAlias}`
     : null;
+
+  const rawDescription = offer.descriptionPreview ?? offer.description ?? '';
+  const cleanDescription = stripHtml(rawDescription);
 
   const formatDate = (timestamp?: number) => {
     if (!timestamp) return '';
@@ -192,14 +196,16 @@ export default function OfferModal({ offer, onClose, onFavoriteToggle }: OfferMo
         )}
 
         {/* Description */}
-        <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Description</h3>
-          <div className={styles.description}>
-            {(offer.descriptionPreview ?? '').split('\n').map((line, i) => (
-              <p key={i}>{line}</p>
-            ))}
+        {cleanDescription && (
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>Description</h3>
+            <div className={styles.description}>
+              {cleanDescription.split('\n').filter(l => l.trim()).map((line, i) => (
+                <p key={i}>{line}</p>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Footer CTA */}
         <div className={styles.footer}>

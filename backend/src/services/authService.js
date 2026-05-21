@@ -1,8 +1,9 @@
-import bcrypt from 'bcrypt';
+import { hashPassword, verifyPassword } from './password.js';
 import jwt from 'jsonwebtoken';
 import pool from '../config/db.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret123';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) throw new Error('JWT_SECRET est manquant dans les variables d\'environnement');
 
 //  REGISTER
 export const registerUser = async ({ email, password, full_name }) => {
@@ -20,7 +21,7 @@ export const registerUser = async ({ email, password, full_name }) => {
     }
 
     // 2. Hash du mot de passe
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
 
     // 3. Récupérer le rôle "user"
     const roleResult = await pool.query(
@@ -50,7 +51,7 @@ export const registerUser = async ({ email, password, full_name }) => {
 
   } catch (error) {
     console.error('authService error:', error);
-    throw error; // ← throw directement sans re-wrapper
+    throw error;
   }
 };
 
@@ -70,14 +71,7 @@ export const loginUser = async ({ email, password }) => {
     const user = result.rows[0];
     if (!user) throw new Error('User not found');
 
-    let valid;
-    if (typeof bcrypt.compare === 'function') {
-      valid = await bcrypt.compare(password, user.password_hash);
-    } else if (typeof bcrypt.compareSync === 'function') {
-      valid = bcrypt.compareSync(password, user.password_hash);
-    } else {
-      throw new Error('bcrypt compare not available');
-    }
+    const valid = await verifyPassword(password, user.password_hash);
     if (!valid) throw new Error('Invalid password');
 
     const token = jwt.sign(
@@ -114,7 +108,7 @@ export const updateUser = async (userId, { email, password, full_name }) => {
     }
 
     if (password) {
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await hashPassword(password);
       updates.push(`password_hash = $${counter++}`);
       values.push(hashedPassword);
     }
